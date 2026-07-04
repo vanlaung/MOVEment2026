@@ -2,7 +2,6 @@ import type {
   AuthAccount,
   LocalDatabase,
   LocalDatabaseSeed,
-  ManagementRole,
   SqlTeam,
   SqlTeamStationProgress,
   SqlUser,
@@ -79,10 +78,6 @@ function toInternalTeamId(teamId: number) {
   return `TEAM${String(teamId).padStart(2, "0")}`;
 }
 
-function mapSqlRoleToManagementRole(role: SqlUser["role"]): ManagementRole {
-  return role === "ADMIN" ? "system-admin" : "admin";
-}
-
 function normalizeSqlUsers(users?: SqlUser[]) {
   if (!users?.length) {
     return null;
@@ -91,7 +86,7 @@ function normalizeSqlUsers(users?: SqlUser[]) {
   return users.map<AuthAccount>((user) => ({
     username: user.username,
     password: user.password_hash,
-    role: mapSqlRoleToManagementRole(user.role),
+    role: user.role,
   }));
 }
 

@@ -1,19 +1,17 @@
 export type Role = "user" | "admin" | "system-admin";
 
-export type ManagementRole = Exclude<Role, "user">;
-
 export type StationStatus = "New" | "In Progress" | "Finish";
 
 export type Session = {
   username: string;
-  role: Role;
+  role: string;
   teamId: string | null;
 };
 
 export type AuthAccount = {
   username: string;
   password: string;
-  role: ManagementRole;
+  role: string;
 };
 
 export type Team = {
@@ -60,7 +58,7 @@ export type TeamFormValues = {
   totalTimeMinutes: number;
 };
 
-export type SqlUserRole = "ADMIN" | "STATION_MANAGER";
+export type SqlUserRole = "admin" | "station_manager" | "system_admin";
 
 export type SqlUser = {
   id: number;

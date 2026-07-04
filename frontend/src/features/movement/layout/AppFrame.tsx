@@ -4,11 +4,12 @@ import {
   SettingOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import {Button, Layout, Typography} from "antd";
+import {Button, Layout, Typography, Image, Flex} from "antd";
 import type {PropsWithChildren} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {ROLE_LABELS} from "../constants";
 import {useMovementStore} from "../store";
+import logo from "../../../assets/ST-logo.png";
 
 type AppFrameProps = Readonly<PropsWithChildren>;
 
@@ -33,22 +34,39 @@ export function AppFrame({children}: AppFrameProps) {
   return (
     <Layout className="mobile-shell">
       <Layout.Header className="shell-header">
-        <div>
-          <div className="brand-mark">MOVEment 2026</div>
-          <Typography.Text className="brand-subtitle">
-            Current team: <b>{activeTeam?.name ?? "No team"}</b>
-          </Typography.Text>
+        <div className="full-width">
+          <Flex
+            horizontal
+            gap={12}
+            justify="space-between"
+            align="center"
+            className="header-content">
+            <Image
+              src={logo}
+              alt="MOVEment 2026"
+              preview={false}
+              style={{height: 24}}
+              className="margin-auto"
+            />
+
+            <Button
+              color="danger"
+              variant="filled"
+              icon={<LogoutOutlined />}
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}>
+              {ROLE_LABELS[session.role]}
+            </Button>
+          </Flex>
+          <Flex horizontal gap={12} justify="space-between" align="center">
+            <div className="brand-mark">MOVEment 2026</div>
+            <Typography.Text className="brand-subtitle">
+              Current team: <b>{activeTeam?.name ?? "No team"}</b>
+            </Typography.Text>
+          </Flex>
         </div>
-        <Button
-          icon={<LogoutOutlined />}
-          type="text"
-          className="logout-button"
-          onClick={() => {
-            logout();
-            navigate("/login");
-          }}>
-          {ROLE_LABELS[session.role]}
-        </Button>
       </Layout.Header>
 
       <div className="nav-strip">

@@ -8,10 +8,12 @@ import {
   Form,
   Input,
   Typography,
+  Image,
 } from "antd";
 import {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {useMovementStore} from "../store";
+import logo from "../../../assets/ST-logo.png";
 
 type LoginFormValues = {
   username: string;
@@ -38,6 +40,12 @@ export function LoginPage() {
       <Card className="surface-card login-card">
         <Flex vertical gap={18} className="full-width">
           <div>
+            <Image
+              src={logo}
+              alt="MOVEment 2026"
+              preview={false}
+              className="login-logo"
+            />
             <Typography.Title level={2} className="login-title">
               MOVEment 2026
             </Typography.Title>
