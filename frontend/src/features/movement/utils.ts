@@ -1,0 +1,198 @@
+import type {
+  AuthAccount,
+  LocalDatabase,
+  LocalDatabaseSeed,
+  StationDefinition,
+  Team,
+  TeamStation,
+} from "./types";
+import {
+  DEFAULT_AUTH_ACCOUNTS,
+  DEFAULT_STATIONS,
+  DEFAULT_TEAMS,
+} from "./constants";
+
+function toIsoFromNow(minutesAgo: number) {
+  return new Date(Date.now() - minutesAgo * 60_000).toISOString();
+}
+
+function createSeededStations(
+  team: Team,
+  definitions: StationDefinition[],
+  index: number,
+) {
+  return definitions.map((station, stationIndex) => {
+    let status: TeamStation["status"] = "New";
+    let score = 0;
+    let startTime: string | null = null;
+    let endTime: string | null = null;
+
+    if (stationIndex < team.finish) {
+      status = "Finish";
+      score = 70 + stationIndex * 20 + (index % 3) * 5;
+      startTime = toIsoFromNow(120 + stationIndex * 18 + index * 5);
+      endTime = toIsoFromNow(95 + stationIndex * 16 + index * 4);
+    }
+
+    if (team.id === "TEAM01" && stationIndex === 1) {
+      status = "New";
+      score = 0;
+      startTime = null;
+      endTime = null;
+    }
+
+    return {
+      id: `${team.id}-${station.id}`,
+      name: station.name,
+      isEnable: station.isEnable,
+      status,
+      score,
+      startTime,
+      endTime,
+      teamId: team.id,
+      stationId: station.id,
+    };
+  });
+}
+
+export function createInitialTeamStations(
+  teams = DEFAULT_TEAMS,
+  definitions = DEFAULT_STATIONS,
+) {
+  return teams.reduce<Record<string, TeamStation[]>>(
+    (accumulator, team, index) => {
+      accumulator[team.id] = createSeededStations(team, definitions, index);
+      return accumulator;
+    },
+    {},
+  );
+}
+
+export const DEFAULT_DATABASE: LocalDatabase = {
+  activeTeamId: DEFAULT_TEAMS[0].id,
+  teams: DEFAULT_TEAMS,
+  authAccounts: DEFAULT_AUTH_ACCOUNTS,
+  stationDefinitions: DEFAULT_STATIONS,
+  teamStations: createInitialTeamStations(),
+};
+
+function normalizeAuthAccounts(accounts?: AuthAccount[]) {
+  return accounts?.length ? accounts : DEFAULT_DATABASE.authAccounts;
+}
+
+function computeTeamStats(team: Team, teamStations: TeamStation[]) {
+  const completedStations = teamStations.filter(
+    (station) => station.status === "Finish",
+  );
+  const score = completedStations.reduce(
+    (total, station) => total + station.score,
+    0,
+  );
+  const totalTimeMinutes = completedStations.reduce((total, station) => {
+    if (!station.startTime || !station.endTime) {
+      return total;
+    }
+
+    const duration =
+      new Date(station.endTime).getTime() -
+      new Date(station.startTime).getTime();
+    return total + Math.max(1, Math.round(duration / 60_000));
+  }, 0);
+
+  return {
+    ...team,
+    score,
+    finish: completedStations.length,
+    totalTimeMinutes,
+  };
+}
+
+export function syncTeamsWithStations(
+  teams: Team[],
+  teamStations: Record<string, TeamStation[]>,
+) {
+  return teams.map((team) =>
+    computeTeamStats(team, teamStations[team.id] ?? []),
+  );
+}
+
+export function normalizeDatabaseSeed(seed?: LocalDatabaseSeed): LocalDatabase {
+  const stationDefinitions =
+    seed?.stationDefinitions?.length ?
+      seed.stationDefinitions
+    : DEFAULT_DATABASE.stationDefinitions;
+  const baseTeams = seed?.teams?.length ? seed.teams : DEFAULT_DATABASE.teams;
+  const authAccounts = normalizeAuthAccounts(seed?.authAccounts);
+  const teamStations =
+    seed?.teamStations && Object.keys(seed.teamStations).length > 0 ?
+      seed.teamStations
+    : createInitialTeamStations(baseTeams, stationDefinitions);
+  const teams = syncTeamsWithStations(baseTeams, teamStations);
+  const activeTeamId =
+    teams.some((team) => team.id === seed?.activeTeamId) ?
+      (seed?.activeTeamId as string)
+    : (teams[0]?.id ?? DEFAULT_DATABASE.activeTeamId);
+
+  return {
+    activeTeamId,
+    stationDefinitions,
+    teams,
+    authAccounts,
+    teamStations,
+  };
+}
+
+export function formatDateTime(value: string | null) {
+  if (!value) {
+    return "--";
+  }
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+  }).format(new Date(value));
+}
+
+export function formatDurationFromMs(durationMs: number) {
+  const safeDuration = Math.max(0, Math.floor(durationMs / 1000));
+  const hours = String(Math.floor(safeDuration / 3600)).padStart(2, "0");
+  const minutes = String(Math.floor((safeDuration % 3600) / 60)).padStart(
+    2,
+    "0",
+  );
+  const seconds = String(safeDuration % 60).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+export function getDisabledReason(
+  station: TeamStation,
+  activeStation: TeamStation | undefined,
+) {
+  if (station.status === "Finish") {
+    return "Trạm đã hoàn thành";
+  }
+
+  if (!station.isEnable) {
+    return "Trạm đang bị quản trị viên tạm khóa";
+  }
+
+  if (activeStation && activeStation.stationId !== station.stationId) {
+    return `Đang có trạm ${activeStation.name} ở trạng thái In Progress`;
+  }
+
+  return null;
+}
+
+export function getStationStatusColor(status: TeamStation["status"]) {
+  switch (status) {
+    case "Finish":
+      return "green";
+    case "In Progress":
+      return "orange";
+    default:
+      return "blue";
+  }
+}

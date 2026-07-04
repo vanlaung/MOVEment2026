@@ -1,0 +1,90 @@
+import {
+  LogoutOutlined,
+  QrcodeOutlined,
+  SettingOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import {Button, Layout, Typography} from "antd";
+import type {PropsWithChildren} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import {ROLE_LABELS} from "../constants";
+import {useMovementStore} from "../store";
+
+type AppFrameProps = Readonly<PropsWithChildren>;
+
+export function AppFrame({children}: AppFrameProps) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const session = useMovementStore((state) => state.session);
+  const activeTeamId = useMovementStore((state) => state.activeTeamId);
+  const teams = useMovementStore((state) => state.teams);
+  const logout = useMovementStore((state) => state.logout);
+
+  const activeTeam = teams.find((team) => team.id === activeTeamId);
+  const totalStation = useMovementStore(
+    (state) => state.stationDefinitions.length,
+  );
+  const totalTeams = teams.length;
+
+  if (!session) {
+    return children;
+  }
+
+  return (
+    <Layout className="mobile-shell">
+      <Layout.Header className="shell-header">
+        <div>
+          <div className="brand-mark">MOVEment 2026</div>
+          <Typography.Text className="brand-subtitle">
+            Current team: <b>{activeTeam?.name ?? "No team"}</b>
+          </Typography.Text>
+        </div>
+        <Button
+          icon={<LogoutOutlined />}
+          type="text"
+          className="logout-button"
+          onClick={() => {
+            logout();
+            navigate("/login");
+          }}>
+          {ROLE_LABELS[session.role]}
+        </Button>
+      </Layout.Header>
+
+      <div className="nav-strip">
+        <Button
+          type={
+            location.pathname.startsWith("/stations") ? "primary" : "default"
+          }
+          icon={<QrcodeOutlined />}
+          onClick={() => navigate("/stations")}>
+          Stations ({totalStation})
+        </Button>
+        {session.role !== "user" && (
+          <Button
+            type={
+              location.pathname.startsWith("/teams") ? "primary" : "default"
+            }
+            icon={<TeamOutlined />}
+            onClick={() => navigate("/teams")}>
+            Teams ({totalTeams})
+          </Button>
+        )}
+        {session.role === "system-admin" && (
+          <Button
+            type={
+              location.pathname.startsWith("/system-config") ?
+                "primary"
+              : "default"
+            }
+            icon={<SettingOutlined />}
+            onClick={() => navigate("/system-config")}>
+            Config
+          </Button>
+        )}
+      </div>
+
+      <Layout.Content className="page-stack">{children}</Layout.Content>
+    </Layout>
+  );
+}

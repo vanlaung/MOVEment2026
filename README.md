@@ -10,7 +10,7 @@ Dự án được xây dựng theo mô hình Fullstack TypeScript, đảm bảo 
 
 * **Frontend (Client-side):**
     * **Core:** React.js + TypeScript + Vite.
-    * **UI Framework:** React Bootstrap (`react-bootstrap`).
+    * **UI Framework:** Ant Design.
     * **Giao tiếp API:** Axios (Cấu hình Interceptors để tự động đính kèm JWT Token vào Header).
     * **Quét QR:** `html5-qrcode`.
 * **Backend (Server-side):**

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Station, TeamStationProgress } from '../../types/player.type';
+import type { Station, TeamStationProgress } from '../../types/player.type';
 import './StationDetailModal.css';
 
 interface StationDetailModalProps {

@@ -1,4 +1,4 @@
-import { Team, Station, TeamStationProgress } from '../types/player.type';
+import type { Team, Station, TeamStationProgress } from '../types/player.type';
 
 // Dummy teams (20 đội)
 export const DUMMY_TEAMS: Team[] = [
