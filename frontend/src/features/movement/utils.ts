@@ -2,6 +2,10 @@ import type {
   AuthAccount,
   LocalDatabase,
   LocalDatabaseSeed,
+  ManagementRole,
+  SqlTeam,
+  SqlTeamStationProgress,
+  SqlUser,
   StationDefinition,
   Team,
   TeamStation,
@@ -76,6 +80,124 @@ export const DEFAULT_DATABASE: LocalDatabase = {
   teamStations: createInitialTeamStations(),
 };
 
+function toInternalTeamId(teamId: number) {
+  return `TEAM${String(teamId).padStart(2, "0")}`;
+}
+
+function mapSqlRoleToManagementRole(role: SqlUser["role"]): ManagementRole {
+  return role === "ADMIN" ? "system-admin" : "admin";
+}
+
+function normalizeSqlUsers(users?: SqlUser[]) {
+  if (!users?.length) {
+    return null;
+  }
+
+  return users.map<AuthAccount>((user) => ({
+    username: user.username,
+    password: user.password_hash,
+    role: mapSqlRoleToManagementRole(user.role),
+  }));
+}
+
+function normalizeSqlStations(seed?: LocalDatabaseSeed) {
+  if (!seed?.stations?.length) {
+    return null;
+  }
+
+  return seed.stations.map<StationDefinition>((station) => ({
+    id: station.id,
+    name: station.name,
+    isEnable: true,
+  }));
+}
+
+function normalizeSqlTeams(seed?: LocalDatabaseSeed) {
+  if (!seed?.teams?.length) {
+    return null;
+  }
+
+  const rawTeams = seed.teams as unknown as SqlTeam[];
+
+  return rawTeams.map<Team>((team) => {
+    const normalizedName = team.team_name.trim();
+    const username = normalizedName.toLowerCase().replace(/\s+/g, "");
+
+    return {
+      id: toInternalTeamId(team.team_id),
+      name: normalizedName,
+      username,
+      password: team.passcode,
+      score: team.total_points,
+      finish: 0,
+      totalTimeMinutes: 0,
+    };
+  });
+}
+
+function mapSqlProgressStatus(
+  status: SqlTeamStationProgress["status"],
+): TeamStation["status"] {
+  switch (status) {
+    case "COMPLETED":
+      return "Finish";
+    case "IN_PROGRESS":
+      return "In Progress";
+    default:
+      return "New";
+  }
+}
+
+function buildTeamStationsFromSqlProgress(
+  teams: Team[],
+  definitions: StationDefinition[],
+  progress?: SqlTeamStationProgress[],
+) {
+  const baseline = teams.reduce<Record<string, TeamStation[]>>((acc, team) => {
+    acc[team.id] = definitions.map((station) => ({
+      id: `${team.id}-${station.id}`,
+      name: station.name,
+      isEnable: station.isEnable,
+      status: "New",
+      score: 0,
+      startTime: null,
+      endTime: null,
+      teamId: team.id,
+      stationId: station.id,
+    }));
+
+    return acc;
+  }, {});
+
+  if (!progress?.length) {
+    return baseline;
+  }
+
+  return progress.reduce<Record<string, TeamStation[]>>((acc, item) => {
+    const teamId = toInternalTeamId(item.team_id);
+    const teamStations = acc[teamId];
+    if (!teamStations) {
+      return acc;
+    }
+
+    acc[teamId] = teamStations.map((station) => {
+      if (station.stationId !== item.station_id) {
+        return station;
+      }
+
+      return {
+        ...station,
+        status: mapSqlProgressStatus(item.status),
+        score: item.score_achieved,
+        startTime: item.arrival_time,
+        endTime: item.completion_time,
+      };
+    });
+
+    return acc;
+  }, baseline);
+}
+
 function normalizeAuthAccounts(accounts?: AuthAccount[]) {
   return accounts?.length ? accounts : DEFAULT_DATABASE.authAccounts;
 }
@@ -117,15 +239,27 @@ export function syncTeamsWithStations(
 }
 
 export function normalizeDatabaseSeed(seed?: LocalDatabaseSeed): LocalDatabase {
+  const sqlStationDefinitions = normalizeSqlStations(seed);
+  const sqlTeams = normalizeSqlTeams(seed);
+  const sqlAuthAccounts = normalizeSqlUsers(seed?.users);
   const stationDefinitions =
-    seed?.stationDefinitions?.length ?
+    sqlStationDefinitions ??
+    (seed?.stationDefinitions?.length ?
       seed.stationDefinitions
-    : DEFAULT_DATABASE.stationDefinitions;
-  const baseTeams = seed?.teams?.length ? seed.teams : DEFAULT_DATABASE.teams;
-  const authAccounts = normalizeAuthAccounts(seed?.authAccounts);
+    : DEFAULT_DATABASE.stationDefinitions);
+  const baseTeams =
+    sqlTeams ?? (seed?.teams?.length ? seed.teams : DEFAULT_DATABASE.teams);
+  const authAccounts =
+    sqlAuthAccounts ?? normalizeAuthAccounts(seed?.authAccounts);
   const teamStations =
     seed?.teamStations && Object.keys(seed.teamStations).length > 0 ?
       seed.teamStations
+    : seed?.team_station_progress ?
+      buildTeamStationsFromSqlProgress(
+        baseTeams,
+        stationDefinitions,
+        seed.team_station_progress,
+      )
     : createInitialTeamStations(baseTeams, stationDefinitions);
   const teams = syncTeamsWithStations(baseTeams, teamStations);
   const activeTeamId =

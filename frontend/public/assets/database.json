@@ -1,134 +1,250 @@
 {
-  "activeTeamId": "TEAM01",
-  "authAccounts": [
+  "users": [
     {
+      "id": 1,
       "username": "admin",
-      "password": "admin",
-      "role": "admin"
+      "password_hash": "admin",
+      "role": "ADMIN",
+      "station_id": null
     },
     {
+      "id": 2,
       "username": "systemadmin",
-      "password": "systemadmin",
-      "role": "system-admin"
+      "password_hash": "systemadmin",
+      "role": "ADMIN",
+      "station_id": null
+    },
+    {
+      "id": 3,
+      "username": "stationmanager1",
+      "password_hash": "stationmanager1",
+      "role": "STATION_MANAGER",
+      "station_id": "ST01"
     }
   ],
-  "stationDefinitions": [
+  "stations": [
     {
       "id": "ST01",
       "name": "Station 1",
-      "isEnable": true
+      "game_type": "Quiz",
+      "points": 100,
+      "youtube_url": null,
+      "clue_text": null,
+      "latitude": 10.77689,
+      "longitude": 106.70081
     },
     {
       "id": "ST02",
       "name": "Station 2",
-      "isEnable": true
+      "game_type": "Puzzle",
+      "points": 100,
+      "youtube_url": null,
+      "clue_text": null,
+      "latitude": 10.77721,
+      "longitude": 106.70143
     },
     {
       "id": "ST03",
       "name": "Station 3",
-      "isEnable": true
+      "game_type": "Obstacle",
+      "points": 100,
+      "youtube_url": null,
+      "clue_text": null,
+      "latitude": 10.77763,
+      "longitude": 106.70201
     },
     {
       "id": "ST04",
       "name": "Station 4",
-      "isEnable": true
+      "game_type": "Riddle",
+      "points": 100,
+      "youtube_url": null,
+      "clue_text": null,
+      "latitude": 10.77812,
+      "longitude": 106.70259
     },
     {
       "id": "ST05",
       "name": "Station 5",
-      "isEnable": true
+      "game_type": "Sprint",
+      "points": 100,
+      "youtube_url": null,
+      "clue_text": null,
+      "latitude": 10.77854,
+      "longitude": 106.70314
     }
   ],
   "teams": [
     {
-      "id": "TEAM01",
-      "name": "Team 1",
-      "username": "team01",
-      "password": "team01",
-      "score": 90,
-      "finish": 1,
-      "totalTimeMinutes": 24
+      "team_id": 1,
+      "team_name": "Team 1",
+      "passcode": "team01",
+      "total_points": 90,
+      "start_time": "2026-07-04T08:00:00.000Z"
     },
     {
-      "id": "TEAM02",
-      "name": "Team 2",
-      "username": "team02",
-      "password": "team02",
-      "score": 180,
-      "finish": 2,
-      "totalTimeMinutes": 41
+      "team_id": 2,
+      "team_name": "Team 2",
+      "passcode": "team02",
+      "total_points": 180,
+      "start_time": "2026-07-04T08:02:00.000Z"
     },
     {
-      "id": "TEAM03",
-      "name": "Team 3",
-      "username": "team03",
-      "password": "team03",
-      "score": 120,
-      "finish": 1,
-      "totalTimeMinutes": 28
+      "team_id": 3,
+      "team_name": "Team 3",
+      "passcode": "team03",
+      "total_points": 120,
+      "start_time": "2026-07-04T08:04:00.000Z"
     },
     {
-      "id": "TEAM04",
-      "name": "Team 4",
-      "username": "team04",
-      "password": "team04",
-      "score": 60,
-      "finish": 1,
-      "totalTimeMinutes": 17
+      "team_id": 4,
+      "team_name": "Team 4",
+      "passcode": "team04",
+      "total_points": 60,
+      "start_time": "2026-07-04T08:06:00.000Z"
     },
     {
-      "id": "TEAM05",
-      "name": "Team 5",
-      "username": "team05",
-      "password": "team05",
-      "score": 0,
-      "finish": 0,
-      "totalTimeMinutes": 0
+      "team_id": 5,
+      "team_name": "Team 5",
+      "passcode": "team05",
+      "total_points": 0,
+      "start_time": "2026-07-04T08:08:00.000Z"
     },
     {
-      "id": "TEAM06",
-      "name": "Team 6",
-      "username": "team06",
-      "password": "team06",
-      "score": 210,
-      "finish": 2,
-      "totalTimeMinutes": 39
+      "team_id": 6,
+      "team_name": "Team 6",
+      "passcode": "team06",
+      "total_points": 210,
+      "start_time": "2026-07-04T08:10:00.000Z"
     },
     {
-      "id": "TEAM07",
-      "name": "Team 7",
-      "username": "team07",
-      "password": "team07",
-      "score": 140,
-      "finish": 1,
-      "totalTimeMinutes": 31
+      "team_id": 7,
+      "team_name": "Team 7",
+      "passcode": "team07",
+      "total_points": 140,
+      "start_time": "2026-07-04T08:12:00.000Z"
     },
     {
-      "id": "TEAM08",
-      "name": "Team 8",
-      "username": "team08",
-      "password": "team08",
-      "score": 75,
-      "finish": 1,
-      "totalTimeMinutes": 22
+      "team_id": 8,
+      "team_name": "Team 8",
+      "passcode": "team08",
+      "total_points": 75,
+      "start_time": "2026-07-04T08:14:00.000Z"
     },
     {
-      "id": "TEAM09",
-      "name": "Team 9",
-      "username": "team09",
-      "password": "team09",
-      "score": 0,
-      "finish": 0,
-      "totalTimeMinutes": 0
+      "team_id": 9,
+      "team_name": "Team 9",
+      "passcode": "team09",
+      "total_points": 0,
+      "start_time": "2026-07-04T08:16:00.000Z"
     },
     {
-      "id": "TEAM10",
-      "name": "Team 10",
-      "username": "team10",
-      "password": "team10",
-      "score": 160,
-      "finish": 2,
-      "totalTimeMinutes": 44
+      "team_id": 10,
+      "team_name": "Team 10",
+      "passcode": "team10",
+      "total_points": 160,
+      "start_time": "2026-07-04T08:18:00.000Z"
+    }
+  ],
+  "team_station_progress": [
+    {
+      "id": 1,
+      "team_id": 1,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:02:00.000Z",
+      "completion_time": "2026-07-04T08:08:00.000Z",
+      "score_achieved": 90
+    },
+    {
+      "id": 2,
+      "team_id": 2,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:04:00.000Z",
+      "completion_time": "2026-07-04T08:11:00.000Z",
+      "score_achieved": 85
+    },
+    {
+      "id": 3,
+      "team_id": 2,
+      "station_id": "ST02",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:14:00.000Z",
+      "completion_time": "2026-07-04T08:21:00.000Z",
+      "score_achieved": 95
+    },
+    {
+      "id": 4,
+      "team_id": 3,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:06:00.000Z",
+      "completion_time": "2026-07-04T08:12:00.000Z",
+      "score_achieved": 120
+    },
+    {
+      "id": 5,
+      "team_id": 4,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:07:00.000Z",
+      "completion_time": "2026-07-04T08:12:00.000Z",
+      "score_achieved": 60
+    },
+    {
+      "id": 6,
+      "team_id": 6,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:11:00.000Z",
+      "completion_time": "2026-07-04T08:17:00.000Z",
+      "score_achieved": 100
+    },
+    {
+      "id": 7,
+      "team_id": 6,
+      "station_id": "ST02",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:20:00.000Z",
+      "completion_time": "2026-07-04T08:27:00.000Z",
+      "score_achieved": 110
+    },
+    {
+      "id": 8,
+      "team_id": 7,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:13:00.000Z",
+      "completion_time": "2026-07-04T08:19:00.000Z",
+      "score_achieved": 140
+    },
+    {
+      "id": 9,
+      "team_id": 8,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:15:00.000Z",
+      "completion_time": "2026-07-04T08:21:00.000Z",
+      "score_achieved": 75
+    },
+    {
+      "id": 10,
+      "team_id": 10,
+      "station_id": "ST01",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:19:00.000Z",
+      "completion_time": "2026-07-04T08:25:00.000Z",
+      "score_achieved": 80
+    },
+    {
+      "id": 11,
+      "team_id": 10,
+      "station_id": "ST02",
+      "status": "COMPLETED",
+      "arrival_time": "2026-07-04T08:27:00.000Z",
+      "completion_time": "2026-07-04T08:35:00.000Z",
+      "score_achieved": 80
     }
   ]
 }

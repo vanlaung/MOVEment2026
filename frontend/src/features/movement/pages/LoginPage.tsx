@@ -2,7 +2,6 @@ import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import {
   Alert,
   App as AntdApp,
-  Badge,
   Button,
   Card,
   Flex,
@@ -39,7 +38,6 @@ export function LoginPage() {
       <Card className="surface-card login-card">
         <Flex vertical gap={18} className="full-width">
           <div>
-            <Badge color="#ff7a59" text="Mobile web app demo" />
             <Typography.Title level={2} className="login-title">
               MOVEment 2026
             </Typography.Title>
@@ -53,8 +51,8 @@ export function LoginPage() {
                 <Typography.Text strong>Tài khoản demo</Typography.Text>
                 <Typography.Text>
                   Tất cả credential đang được đọc từ `database.json`. Team ví dụ
-                  `team01/team01`, tài khoản quản trị mặc định là
-                  `admin/admin` và `systemadmin/systemadmin`.
+                  `team01/team01`, tài khoản quản trị mặc định là `admin/admin`
+                  và `systemadmin/systemadmin`.
                 </Typography.Text>
               </Flex>
             }
@@ -69,7 +67,8 @@ export function LoginPage() {
 
               const matchedAccount = authAccounts.find(
                 (account) =>
-                  account.username === username && account.password === password,
+                  account.username === username &&
+                  account.password === password,
               );
 
               if (matchedAccount) {

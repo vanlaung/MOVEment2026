@@ -1,4 +1,4 @@
-import {Card, Flex, List, Space, Tag, Typography} from "antd";
+import {Card, Flex, List, Tag, Typography} from "antd";
 import {useNavigate} from "react-router-dom";
 import {useMovementStore} from "../store";
 

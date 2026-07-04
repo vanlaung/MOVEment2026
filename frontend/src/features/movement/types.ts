@@ -60,12 +60,56 @@ export type TeamFormValues = {
   totalTimeMinutes: number;
 };
 
+export type SqlUserRole = "ADMIN" | "STATION_MANAGER";
+
+export type SqlUser = {
+  id: number;
+  username: string;
+  password_hash: string;
+  role: SqlUserRole;
+  station_id: string | null;
+};
+
+export type SqlStation = {
+  id: string;
+  name: string;
+  game_type: string | null;
+  points: number;
+  youtube_url: string | null;
+  clue_text: string | null;
+  latitude: number | null;
+  longitude: number | null;
+};
+
+export type SqlTeam = {
+  team_id: number;
+  team_name: string;
+  passcode: string;
+  total_points: number;
+  start_time: string | null;
+};
+
+export type SqlProgressStatus = "LOCKED" | "IN_PROGRESS" | "COMPLETED";
+
+export type SqlTeamStationProgress = {
+  id: number;
+  team_id: number;
+  station_id: string;
+  status: SqlProgressStatus;
+  arrival_time: string | null;
+  completion_time: string | null;
+  score_achieved: number;
+};
+
 export type LocalDatabaseSeed = {
   activeTeamId?: string;
   teams?: Team[];
   authAccounts?: AuthAccount[];
   stationDefinitions?: StationDefinition[];
   teamStations?: Record<string, TeamStation[]>;
+  users?: SqlUser[];
+  stations?: SqlStation[];
+  team_station_progress?: SqlTeamStationProgress[];
 };
 
 export type LocalDatabase = {
