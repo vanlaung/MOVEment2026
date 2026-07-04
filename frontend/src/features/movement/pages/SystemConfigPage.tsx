@@ -19,6 +19,9 @@ export function SystemConfigPage() {
     (state) => state.stationDefinitions,
   );
   const teams = useMovementStore((state) => state.teams);
+  const totalStations = useMovementStore(
+    (state) => state.stationDefinitions.length,
+  );
   const deleteStationDefinition = useMovementStore(
     (state) => state.deleteStationDefinition,
   );
@@ -46,14 +49,14 @@ export function SystemConfigPage() {
                     <List.Item>
                       <Card className="surface-card station-card">
                         <div className="station-row">
-                          <div>
+                          <Flex vertical gap={4}>
                             <Typography.Title level={4} className="card-title">
                               {station.name}
                             </Typography.Title>
-                            <Typography.Paragraph className="muted-copy compact-copy">
+                            <Typography.Text className="muted-copy compact-copy">
                               {station.id}
-                            </Typography.Paragraph>
-                          </div>
+                            </Typography.Text>
+                          </Flex>
                           <Space>
                             <Button
                               icon={<EditOutlined />}
@@ -107,15 +110,18 @@ export function SystemConfigPage() {
                     <List.Item>
                       <Card className="surface-card station-card">
                         <div className="station-row">
-                          <div>
+                          <Flex vertical gap={4}>
                             <Typography.Title level={4} className="card-title">
                               {team.name}
                             </Typography.Title>
-                            <Typography.Paragraph className="muted-copy compact-copy">
-                              {team.id} · Score {team.score} · Finish{" "}
-                              {team.finish} · {team.totalTimeMinutes} min
-                            </Typography.Paragraph>
-                          </div>
+                            <Typography.Text className="muted-copy compact-copy">
+                              {team.id} · Score {team.score}
+                            </Typography.Text>
+                            <Typography.Text className="muted-copy compact-copy">
+                              Finish {team.finish}/{totalStations} in{" "}
+                              {team.totalTimeMinutes} min
+                            </Typography.Text>
+                          </Flex>
                           <Space>
                             <Button
                               icon={<EditOutlined />}

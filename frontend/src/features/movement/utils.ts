@@ -10,11 +10,6 @@ import type {
   Team,
   TeamStation,
 } from "./types";
-import {
-  DEFAULT_AUTH_ACCOUNTS,
-  DEFAULT_STATIONS,
-  DEFAULT_TEAMS,
-} from "./constants";
 
 function toIsoFromNow(minutesAgo: number) {
   return new Date(Date.now() - minutesAgo * 60_000).toISOString();
@@ -60,8 +55,8 @@ function createSeededStations(
 }
 
 export function createInitialTeamStations(
-  teams = DEFAULT_TEAMS,
-  definitions = DEFAULT_STATIONS,
+  teams: Team[] = [],
+  definitions: StationDefinition[] = [],
 ) {
   return teams.reduce<Record<string, TeamStation[]>>(
     (accumulator, team, index) => {
@@ -73,10 +68,10 @@ export function createInitialTeamStations(
 }
 
 export const DEFAULT_DATABASE: LocalDatabase = {
-  activeTeamId: DEFAULT_TEAMS[0].id,
-  teams: DEFAULT_TEAMS,
-  authAccounts: DEFAULT_AUTH_ACCOUNTS,
-  stationDefinitions: DEFAULT_STATIONS,
+  activeTeamId: "",
+  teams: [],
+  authAccounts: [],
+  stationDefinitions: [],
   teamStations: createInitialTeamStations(),
 };
 
@@ -121,7 +116,8 @@ function normalizeSqlTeams(seed?: LocalDatabaseSeed) {
 
   return rawTeams.map<Team>((team) => {
     const normalizedName = team.team_name.trim();
-    const username = normalizedName.toLowerCase().replace(/\s+/g, "");
+    // Keep username aligned with database team_id/passcode convention (team01).
+    const username = `team${String(team.team_id).padStart(2, "0")}`;
 
     return {
       id: toInternalTeamId(team.team_id),

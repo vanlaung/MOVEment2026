@@ -16,6 +16,8 @@ import {
   Tag,
   Typography,
 } from "antd";
+import find from "lodash/find";
+import sortBy from "lodash/sortBy";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {STATUS_ORDER} from "../constants";
@@ -45,18 +47,12 @@ export function StationListPage() {
   const [quickEditForm] = Form.useForm<QuickEditFormValues>();
 
   const team = teams.find((item) => item.id === activeTeamId);
-  const sortedStations = [...(teamStations[activeTeamId] ?? [])].sort(
-    (left, right) => {
-      const statusDelta =
-        STATUS_ORDER[left.status] - STATUS_ORDER[right.status];
-      if (statusDelta !== 0) {
-        return statusDelta;
-      }
-
-      return left.name.localeCompare(right.name, "vi");
-    },
-  );
-  const activeStation = sortedStations.find(
+  const sortedStations = sortBy(teamStations[activeTeamId] ?? [], [
+    (station) => STATUS_ORDER[station.status],
+    (station) => station.name,
+  ]);
+  const activeStation = find(
+    sortedStations,
     (station) => station.status === "In Progress",
   );
 
@@ -95,13 +91,18 @@ export function StationListPage() {
     <Flex vertical gap={16} className="full-width">
       <Card className="surface-card compact-card">
         <div className="section-head">
-          <div>
+          <div className="full-width">
             <Typography.Title level={3} className="section-title">
               Team hiện tại: {team.name}
             </Typography.Title>
-            <Typography.Text className="muted-copy">
-              Score {team.score} · Finish {team.finish}/{sortedStations.length}
-            </Typography.Text>
+            <Flex gap={4} justify="space-between" align="center">
+              <Typography.Text className="muted-copy">
+                Total Score: {team.score}
+              </Typography.Text>
+              <Typography.Text className="muted-copy">
+                Finish: {team.finish}/{sortedStations.length}
+              </Typography.Text>
+            </Flex>
           </div>
         </div>
       </Card>
@@ -111,8 +112,6 @@ export function StationListPage() {
         dataSource={sortedStations}
         locale={{emptyText: <Empty description="Chưa có trạm" />}}
         renderItem={(station) => {
-          const disabledReason = getDisabledReason(station, activeStation);
-
           return (
             <List.Item>
               <Card
@@ -133,29 +132,27 @@ export function StationListPage() {
                         {station.status}
                       </Tag>
                     </Flex>
-                    <Typography.Paragraph className="muted-copy compact-copy">
-                      {station.stationId} · Score {station.score}
-                    </Typography.Paragraph>
                     <Flex gap={4} justify="space-between" align="center">
-                      <Typography.Paragraph className="muted-copy compact-copy">
+                      <Typography.Text className="muted-copy compact-copy">
+                        {station.stationId}
+                      </Typography.Text>
+                      <Typography.Text className="muted-copy compact-copy">
                         Start: {formatDateTime(station.startTime)}
-                      </Typography.Paragraph>
-                      <Typography.Paragraph className="muted-copy compact-copy">
-                        End: {formatDateTime(station.endTime)}
-                      </Typography.Paragraph>
+                      </Typography.Text>
                     </Flex>
-                    {disabledReason ?
-                      <Tag
-                        color={station.status === "Finish" ? "default" : "red"}>
-                        {disabledReason}
-                      </Tag>
-                    : <Tag color="cyan">Sẵn sàng thao tác</Tag>}
+                    <Flex gap={4} justify="space-between" align="center">
+                      <Typography.Text className="muted-copy compact-copy">
+                        Score: {station.score}
+                      </Typography.Text>
+                      <Typography.Text className="muted-copy compact-copy">
+                        End: {formatDateTime(station.endTime)}
+                      </Typography.Text>
+                    </Flex>
                   </div>
 
                   {(session.role === "admin" ||
                     session.role === "system-admin") && (
                     <Button
-                      className="mt-2"
                       icon={<EditOutlined />}
                       onClick={(event) => {
                         event.stopPropagation();
@@ -166,7 +163,7 @@ export function StationListPage() {
                         });
                         setEditingStation(station);
                       }}>
-                      Edit
+                      Quick Update
                     </Button>
                   )}
                 </div>
@@ -178,6 +175,7 @@ export function StationListPage() {
 
       <Drawer
         title="Cập nhật nhanh trạm"
+        placement="bottom"
         open={Boolean(editingStation)}
         onClose={() => setEditingStation(null)}
         destroyOnHidden>

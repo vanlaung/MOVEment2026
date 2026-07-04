@@ -4,22 +4,29 @@
       "id": 1,
       "username": "admin",
       "password_hash": "admin",
-      "role": "ADMIN",
+      "role": "admin",
       "station_id": null
     },
     {
       "id": 2,
       "username": "systemadmin",
       "password_hash": "systemadmin",
-      "role": "ADMIN",
+      "role": "system-admin",
       "station_id": null
     },
     {
       "id": 3,
       "username": "stationmanager1",
       "password_hash": "stationmanager1",
-      "role": "STATION_MANAGER",
+      "role": "admin",
       "station_id": "ST01"
+    },
+    {
+      "id": 4,
+      "username": "stationmanager2",
+      "password_hash": "stationmanager2",
+      "role": "admin",
+      "station_id": "ST02"
     }
   ],
   "stations": [

@@ -24,11 +24,11 @@ export function TeamListPage() {
     <Flex vertical gap={16} className="full-width">
       <Card className="surface-card compact-card">
         <Typography.Title level={3} className="section-title">
-          Team List
+          Hướng dẫn
         </Typography.Title>
-        <Typography.Paragraph className="muted-copy compact-copy">
+        <Typography.Text className="muted-copy compact-copy">
           Chọn một team để mở lại màn hình Station List của team đó.
-        </Typography.Paragraph>
+        </Typography.Text>
       </Card>
 
       <List
@@ -57,9 +57,9 @@ export function TeamListPage() {
                       <Tag color="gold">Active team</Tag>
                     )}
                   </Flex>
-                  <Typography.Paragraph className="muted-copy compact-copy">
+                  <Typography.Text className="muted-copy compact-copy">
                     {team.id} · Score {team.score}
-                  </Typography.Paragraph>
+                  </Typography.Text>
                 </div>
 
                 <Flex gap={4} align="flex-end">

@@ -1,4 +1,9 @@
-import { CheckCircleOutlined, ClockCircleOutlined, ReloadOutlined, SaveOutlined } from '@ant-design/icons'
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  ReloadOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
 import {
   Alert,
   App as AntdApp,
@@ -11,60 +16,66 @@ import {
   InputNumber,
   Modal,
   Space,
-  Tag,
   Typography,
-} from 'antd'
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useMovementStore } from '../store'
-import { formatDateTime, formatDurationFromMs } from '../utils'
+} from "antd";
+import {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
+import {useMovementStore} from "../store";
+import {formatDateTime, formatDurationFromMs} from "../utils";
 
 type ScoreFormValues = {
-  score: number
-}
+  score: number;
+};
 
 export function StationDetailPage() {
-  const navigate = useNavigate()
-  const params = useParams<{ stationId: string }>()
-  const { modal, message } = AntdApp.useApp()
-  const session = useMovementStore((state) => state.session)
-  const activeTeamId = useMovementStore((state) => state.activeTeamId)
-  const teams = useMovementStore((state) => state.teams)
-  const teamStations = useMovementStore((state) => state.teamStations)
-  const finishStation = useMovementStore((state) => state.finishStation)
-  const resetStation = useMovementStore((state) => state.resetStation)
-  const [adminForm] = Form.useForm<ScoreFormValues>()
-  const [scoreForm] = Form.useForm<ScoreFormValues>()
-  const [clockTick, setClockTick] = useState(() => Date.now())
-  const [isFinishScannerOpen, setIsFinishScannerOpen] = useState(false)
-  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false)
+  const navigate = useNavigate();
+  const params = useParams<{stationId: string}>();
+  const {modal, message} = AntdApp.useApp();
+  const session = useMovementStore((state) => state.session);
+  const activeTeamId = useMovementStore((state) => state.activeTeamId);
+  const teams = useMovementStore((state) => state.teams);
+  const teamStations = useMovementStore((state) => state.teamStations);
+  const finishStation = useMovementStore((state) => state.finishStation);
+  const resetStation = useMovementStore((state) => state.resetStation);
+  const [adminForm] = Form.useForm<ScoreFormValues>();
+  const [scoreForm] = Form.useForm<ScoreFormValues>();
+  const [clockTick, setClockTick] = useState(() => Date.now());
+  const [isFinishScannerOpen, setIsFinishScannerOpen] = useState(false);
+  const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
 
-  const team = teams.find((item) => item.id === activeTeamId)
-  const station = (teamStations[activeTeamId] ?? []).find((item) => item.stationId === params.stationId)
-  const stationStartTime = station?.startTime ?? null
-  const canShowLiveClock = Boolean(stationStartTime && session?.role === 'user')
-  const elapsed = canShowLiveClock
-    ? formatDurationFromMs(clockTick - new Date(stationStartTime as string).getTime())
-    : '00:00:00'
+  const team = teams.find((item) => item.id === activeTeamId);
+  const station = (teamStations[activeTeamId] ?? []).find(
+    (item) => item.stationId === params.stationId,
+  );
+  const stationStartTime = station?.startTime ?? null;
+  const canShowLiveClock = Boolean(
+    stationStartTime && session?.role === "user",
+  );
+  const elapsed =
+    canShowLiveClock ?
+      formatDurationFromMs(
+        clockTick - new Date(stationStartTime as string).getTime(),
+      )
+    : "00:00:00";
 
   useEffect(() => {
     if (!canShowLiveClock) {
-      return
+      return;
     }
 
     const timer = globalThis.setInterval(() => {
-      setClockTick(Date.now())
-    }, 1000)
+      setClockTick(Date.now());
+    }, 1000);
 
-    return () => globalThis.clearInterval(timer)
-  }, [canShowLiveClock])
+    return () => globalThis.clearInterval(timer);
+  }, [canShowLiveClock]);
 
   useEffect(() => {
-    adminForm.setFieldsValue({ score: station?.score ?? 0 })
-  }, [adminForm, station])
+    adminForm.setFieldsValue({score: station?.score ?? 0});
+  }, [adminForm, station]);
 
   if (!session || !team) {
-    return null
+    return null;
   }
 
   if (!station) {
@@ -72,69 +83,76 @@ export function StationDetailPage() {
       <Card className="surface-card">
         <Empty description="Không tìm thấy trạm" />
       </Card>
-    )
+    );
   }
 
   return (
     <Flex vertical gap={16} className="full-width">
       <Card className="surface-card compact-card">
-        <Flex vertical gap={8} className="full-width">
-          <Tag color="cyan">Station Detail</Tag>
-          <Typography.Title level={3} className="section-title">
-            {station.name}
-          </Typography.Title>
-          <Typography.Paragraph className="muted-copy compact-copy">
-            Team {team.name} · Status {station.status}
-          </Typography.Paragraph>
-        </Flex>
-      </Card>
-
-      <Card className="surface-card">
+        <Typography.Title level={3} className="section-title">
+          Detail {station.name}
+        </Typography.Title>
         <Descriptions column={1} size="small">
-          <Descriptions.Item label="Station ID">{station.stationId}</Descriptions.Item>
-          <Descriptions.Item label="Start Time">{formatDateTime(station.startTime)}</Descriptions.Item>
-          <Descriptions.Item label="End Time">{formatDateTime(station.endTime)}</Descriptions.Item>
+          <Descriptions.Item label="Station ID">
+            {station.stationId}
+          </Descriptions.Item>
+          <Descriptions.Item label="Team ID">{team.id}</Descriptions.Item>
+          <Descriptions.Item label="Team Name">{team.name}</Descriptions.Item>
+          <Descriptions.Item label="Start Time">
+            {formatDateTime(station.startTime)}
+          </Descriptions.Item>
+          <Descriptions.Item label="End Time">
+            {formatDateTime(station.endTime)}
+          </Descriptions.Item>
           <Descriptions.Item label="Score">{station.score}</Descriptions.Item>
         </Descriptions>
       </Card>
 
-      {session.role === 'user' ? (
+      {session.role === "user" ?
         <Card className="surface-card">
           <Flex vertical gap={16} className="full-width">
             <div>
               <Typography.Text className="muted-copy">Clock</Typography.Text>
               <Space size={12} align="center">
                 <ClockCircleOutlined />
-                <Typography.Title level={2} className="section-title live-clock">
+                <Typography.Title
+                  level={2}
+                  className="section-title live-clock">
                   {elapsed}
                 </Typography.Title>
               </Space>
             </div>
-            <Button type="primary" size="large" icon={<CheckCircleOutlined />} onClick={() => setIsFinishScannerOpen(true)}>
+            <Button
+              type="primary"
+              size="large"
+              icon={<CheckCircleOutlined />}
+              onClick={() => setIsFinishScannerOpen(true)}>
               Finish
             </Button>
           </Flex>
         </Card>
-      ) : (
-        <Card className="surface-card">
+      : <Card className="surface-card">
           <Form
             form={adminForm}
             layout="vertical"
             onFinish={(values) => {
               modal.confirm({
-                title: 'Xác nhận lưu điểm',
-                content: 'Điểm và endTime sẽ được cập nhật theo thời điểm hiện tại.',
-                okText: 'Save',
-                cancelText: 'Hủy',
+                title: "Xác nhận lưu điểm",
+                content:
+                  "Điểm và endTime sẽ được cập nhật theo thời điểm hiện tại.",
+                okText: "Save",
+                cancelText: "Hủy",
                 onOk: () => {
-                  finishStation(activeTeamId, station.stationId, values.score)
-                  message.success('Đã lưu điểm thành công')
-                  navigate('/stations')
+                  finishStation(activeTeamId, station.stationId, values.score);
+                  message.success("Đã lưu điểm thành công");
+                  navigate("/stations");
                 },
-              })
-            }}
-          >
-            <Form.Item label="Input Score" name="score" rules={[{ required: true }]}>
+              });
+            }}>
+            <Form.Item
+              label="Input Score"
+              name="score"
+              rules={[{required: true}]}>
               <InputNumber min={0} max={1000} className="full-width" />
             </Form.Item>
             <Space className="full-width" size={12}>
@@ -146,37 +164,35 @@ export function StationDetailPage() {
                 icon={<ReloadOutlined />}
                 onClick={() => {
                   modal.confirm({
-                    title: 'Reset status?',
-                    content: 'Trạng thái sẽ quay về New và xóa start/end time.',
-                    okText: 'Reset',
-                    cancelText: 'Hủy',
+                    title: "Reset status?",
+                    content: "Trạng thái sẽ quay về New và xóa start/end time.",
+                    okText: "Reset",
+                    cancelText: "Hủy",
                     onOk: () => {
-                      resetStation(activeTeamId, station.stationId)
-                      message.success('Đã reset trạng thái')
-                      navigate('/stations')
+                      resetStation(activeTeamId, station.stationId);
+                      message.success("Đã reset trạng thái");
+                      navigate("/stations");
                     },
-                  })
-                }}
-              >
+                  });
+                }}>
                 Reset Status
               </Button>
             </Space>
           </Form>
         </Card>
-      )}
+      }
 
       <Modal
         title="Quét QR để hoàn thành"
         open={isFinishScannerOpen}
         onCancel={() => setIsFinishScannerOpen(false)}
         onOk={() => {
-          setIsFinishScannerOpen(false)
-          scoreForm.setFieldsValue({ score: station.score })
-          setIsScoreModalOpen(true)
+          setIsFinishScannerOpen(false);
+          scoreForm.setFieldsValue({score: station.score});
+          setIsScoreModalOpen(true);
         }}
         okText="Scan QR code successfully"
-        cancelText="Đóng"
-      >
+        cancelText="Đóng">
         <Alert
           type="info"
           showIcon
@@ -184,7 +200,8 @@ export function StationDetailPage() {
             <Flex vertical gap={4}>
               <Typography.Text strong>Camera mobile simulation</Typography.Text>
               <Typography.Text>
-                Sau khi scan thành công, app sẽ yêu cầu nhập điểm trước khi đóng phiên chơi.
+                Sau khi scan thành công, app sẽ yêu cầu nhập điểm trước khi đóng
+                phiên chơi.
               </Typography.Text>
             </Flex>
           }
@@ -195,27 +212,30 @@ export function StationDetailPage() {
         title="Nhập điểm"
         open={isScoreModalOpen}
         onCancel={() => setIsScoreModalOpen(false)}
-        footer={null}
-      >
+        footer={null}>
         <Form
           form={scoreForm}
           layout="vertical"
           onFinish={(values) => {
             modal.confirm({
-              title: 'Xác nhận hoàn thành trạm',
-              content: 'Điểm sẽ được lưu và endTime sẽ cập nhật theo thời điểm scan thành công.',
-              okText: 'Xác nhận',
-              cancelText: 'Hủy',
+              title: "Xác nhận hoàn thành trạm",
+              content:
+                "Điểm sẽ được lưu và endTime sẽ cập nhật theo thời điểm scan thành công.",
+              okText: "Xác nhận",
+              cancelText: "Hủy",
               onOk: () => {
-                finishStation(activeTeamId, station.stationId, values.score)
-                message.success('Hoàn thành trạm thành công')
-                setIsScoreModalOpen(false)
-                navigate('/stations')
+                finishStation(activeTeamId, station.stationId, values.score);
+                message.success("Hoàn thành trạm thành công");
+                setIsScoreModalOpen(false);
+                navigate("/stations");
               },
-            })
-          }}
-        >
-          <Form.Item label="Input Score" name="score" initialValue={0} rules={[{ required: true }]}>
+            });
+          }}>
+          <Form.Item
+            label="Input Score"
+            name="score"
+            initialValue={0}
+            rules={[{required: true}]}>
             <InputNumber min={0} max={1000} className="full-width" />
           </Form.Item>
           <Button type="primary" htmlType="submit" block>
@@ -224,5 +244,5 @@ export function StationDetailPage() {
         </Form>
       </Modal>
     </Flex>
-  )
+  );
 }
