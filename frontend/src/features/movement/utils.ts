@@ -142,13 +142,11 @@ function buildTeamStationsFromSqlProgress(
   const baseline = teams.reduce<Record<string, TeamStation[]>>((acc, team) => {
     acc[team.id] = definitions.map((station) => ({
       id: `${team.id}-${station.id}`,
-      name: station.name,
-      description: station.description,
-      durationMinutes: station.durationMinutes,
       status: "New",
       score: 0,
       startTime: null,
       endTime: null,
+      ...station,
       teamId: team.id,
       stationId: station.id,
     }));
@@ -276,8 +274,6 @@ export function formatDateTime(value: string | null) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    day: "2-digit",
-    month: "2-digit",
   }).format(new Date(value));
 }
 
@@ -297,11 +293,11 @@ export function getDisabledReason(
   activeStation: TeamStation | undefined,
 ) {
   if (station.status === "Finish") {
-    return "Trạm đã hoàn thành";
+    return "Station has already been completed";
   }
 
   if (activeStation && activeStation.stationId !== station.stationId) {
-    return `Đang có trạm ${activeStation.name} ở trạng thái In Progress`;
+    return `There is an active station ${activeStation.name} in progress`;
   }
 
   return null;

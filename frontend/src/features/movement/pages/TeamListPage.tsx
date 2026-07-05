@@ -24,10 +24,10 @@ export function TeamListPage() {
     <Flex vertical gap={16} className="full-width">
       <Card className="surface-card compact-card">
         <Typography.Title level={3} className="section-title">
-          Hướng dẫn
+          Guide
         </Typography.Title>
         <Typography.Text className="muted-copy compact-copy">
-          Chọn một team để mở lại màn hình Station List của team đó.
+          Select a team to reopen the Station List screen for that team.
         </Typography.Text>
       </Card>
 
@@ -37,7 +37,6 @@ export function TeamListPage() {
         renderItem={(team) => (
           <List.Item>
             <Card
-              hoverable
               className="surface-card station-card"
               onClick={() => {
                 setActiveTeam(team.id);

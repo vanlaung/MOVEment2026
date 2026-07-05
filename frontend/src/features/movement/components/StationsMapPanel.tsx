@@ -10,6 +10,7 @@ import {
   Select,
   Tag,
   Typography,
+  Descriptions,
 } from "antd";
 import type {KonvaEventObject} from "konva/lib/Node";
 import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
@@ -30,7 +31,7 @@ import {
   getStationStatusColor,
 } from "../utils";
 import "./StationsMapPanel.css";
-import {ReloadOutlined} from "@ant-design/icons";
+import {ReloadOutlined, YoutubeOutlined} from "@ant-design/icons";
 
 type StationsMapPanelProps = Readonly<{
   editable?: boolean;
@@ -329,7 +330,7 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
     }
 
     if (!selectedStation) {
-      message.warning("Vui lòng chọn trạm trước khi đặt marker");
+      message.warning("Please select a station before placing a marker");
       return;
     }
 
@@ -352,13 +353,14 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
     );
 
     modal.confirm({
-      title: "Cập nhật vị trí marker?",
-      content: `${selectedStation.name} sẽ được cập nhật vị trí.`,
-      okText: "Cập nhật",
-      cancelText: "Hủy",
+      centered: true,
+      title: "Update marker position?",
+      content: `${selectedStation.name} will be updated with the new position.`,
+      okText: "Update",
+      cancelText: "Cancel",
       onOk: () => {
         updateStationMarker(selectedStation.id, {markerX, markerY});
-        message.success(`Đã cập nhật vị trí cho trạm ${selectedStation.name}`);
+        message.success(`Updated position for station ${selectedStation.name}`);
       },
     });
   };
@@ -366,10 +368,17 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
   if (!stationDefinitions.length) {
     return (
       <Card className="surface-card">
-        <Empty description="Chưa có dữ liệu trạm để hiển thị bản đồ" />
+        <Empty description="No station data available to display the map" />
       </Card>
     );
   }
+
+  const openLinkInNewTab = (url: string) => {
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (newWindow) {
+      newWindow.opener = null;
+    }
+  };
 
   return (
     <div className="movement-map-card">
@@ -394,14 +403,14 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
               <Select
                 value={resolvedSelectedStationId}
                 style={{minWidth: 240, flex: 1}}
-                placeholder="Chọn trạm để đặt marker"
+                placeholder="Select a station to place a marker"
                 options={stationDefinitions.map((station) => ({
                   label: `${station.id} - ${station.name}`,
                   value: station.id,
                 }))}
                 onChange={setSelectedStationId}
               />
-              <Tag color="gold">Click vào bản đồ để đặt marker</Tag>
+              <Tag color="gold">Click on the map to place a marker</Tag>
             </div>
           )}
 
@@ -486,9 +495,7 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
       </div>
 
       <Drawer
-        title={
-          focusedStation ? `Chi tiết ${focusedStation.name}` : "Chi tiết trạm"
-        }
+        title={focusedStation?.name ?? "Station Details"}
         open={Boolean(focusedStation)}
         onClose={() => setFocusedStationId(null)}
         placement="bottom"
@@ -497,64 +504,77 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
           <Flex vertical gap={12} style={{width: "100%"}}>
             {focusedTeamStation && (
               <>
-                <Tag color={getStationStatusColor(focusedTeamStation.status)}>
-                  {focusedTeamStation.status}
-                </Tag>
-                <Typography.Text>
-                  Description: {focusedTeamStation.description ?? "--"}
-                </Typography.Text>
-                <Typography.Text>
-                  Duration: {focusedTeamStation.duration ?? "--"}
-                </Typography.Text>
-                <Typography.Text>
-                  Score: {focusedTeamStation.score}
-                </Typography.Text>
-                <Typography.Text>
-                  Start: {formatDateTime(focusedTeamStation.startTime)}
-                </Typography.Text>
-                <Typography.Text>
-                  End: {formatDateTime(focusedTeamStation.endTime)}
-                </Typography.Text>
+                <Typography.Paragraph className="muted-copy compact-copy">
+                  {focusedTeamStation.description}
+                </Typography.Paragraph>
+
+                <Descriptions column={2} size="small">
+                  <Descriptions.Item label="Playing Teams" span={2}>
+                    2
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Estimated Duration">
+                    {focusedTeamStation.duration ?
+                      `${focusedTeamStation.duration} minutes`
+                    : "N/A"}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Score">
+                    {focusedTeamStation.score}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Start Time">
+                    {formatDateTime(focusedTeamStation.startTime)}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="End Time">
+                    {formatDateTime(focusedTeamStation.endTime)}
+                  </Descriptions.Item>
+                </Descriptions>
               </>
             )}
 
-            {session?.role === "user" && focusedTeamStation && (
-              <Button
-                type="primary"
-                onClick={() => {
-                  const disabledReason = getDisabledReason(
-                    focusedTeamStation,
-                    activeStation,
-                  );
+            {focusedTeamStation && (
+              <Flex justify="space-between" gap={8} className="full-width">
+                {focusedTeamStation.youtubeUrl && (
+                  <Button
+                    className="full-width"
+                    icon={<YoutubeOutlined />}
+                    onClick={() =>
+                      openLinkInNewTab(focusedTeamStation.youtubeUrl)
+                    }>
+                    Watch Video
+                  </Button>
+                )}
+                <Button
+                  type="primary"
+                  className="full-width"
+                  onClick={() => {
+                    const disabledReason = getDisabledReason(
+                      focusedTeamStation,
+                      activeStation,
+                    );
 
-                  if (disabledReason) {
-                    message.warning(disabledReason);
-                    return;
-                  }
+                    if (disabledReason) {
+                      message.warning(disabledReason);
+                      return;
+                    }
 
-                  if (focusedTeamStation.status === "In Progress") {
-                    modal.confirm({
-                      title: "Bạn có muốn chơi lại không?",
-                      content:
-                        "Nếu tiếp tục, trạng thái trạm sẽ được quét lại để mở màn hình chi tiết.",
-                      okText: "Có",
-                      cancelText: "Không",
-                      onOk: () => setScanTarget(focusedTeamStation),
-                    });
-                    return;
-                  }
+                    if (focusedTeamStation.status === "In Progress") {
+                      // Navigate to the station detail page if the station is already in progress
+                      navigate(`/stations/${focusedTeamStation.stationId}`);
+                      return;
+                    }
 
-                  setScanTarget(focusedTeamStation);
-                }}>
-                Scan QR để start game
-              </Button>
+                    setScanTarget(focusedTeamStation);
+                  }}>
+                  Play
+                </Button>
+              </Flex>
             )}
           </Flex>
         )}
       </Drawer>
 
       <Modal
-        title="Scan QR để bắt đầu"
+        centered
+        title="Scan QR to Start Game"
         open={Boolean(scanTarget)}
         onCancel={() => setScanTarget(null)}
         onOk={() => {
@@ -570,10 +590,10 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
           navigate(`/stations/${stationId}`);
         }}
         okText="Scan QR code successfully"
-        cancelText="Đóng">
+        cancelText="Close">
         <Flex vertical gap={12} style={{width: "100%"}}>
           <Typography.Text>
-            Mô phỏng camera điện thoại cho trạm{" "}
+            Simulating phone camera for station{" "}
             <strong>{scanTarget?.name}</strong>.
           </Typography.Text>
           <Alert
@@ -581,10 +601,10 @@ export function StationsMapPanel({editable = false}: StationsMapPanelProps) {
             showIcon
             description={
               <Flex vertical gap={4}>
-                <Typography.Text strong>Luồng user</Typography.Text>
+                <Typography.Text strong>User Flow</Typography.Text>
                 <Typography.Text>
-                  Sau khi scan thành công, trạng thái sẽ chuyển sang In Progress
-                  và điều hướng sang màn hình Station Detail.
+                  After a successful scan, the status will change to In Progress
+                  and navigate to the Station Detail screen.
                 </Typography.Text>
               </Flex>
             }

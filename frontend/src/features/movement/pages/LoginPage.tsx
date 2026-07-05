@@ -56,11 +56,11 @@ export function LoginPage() {
             showIcon
             description={
               <Flex vertical gap={4}>
-                <Typography.Text strong>Tài khoản demo</Typography.Text>
+                <Typography.Text strong>Demo Account</Typography.Text>
                 <Typography.Text>
-                  Tất cả credential đang được đọc từ `database.json`. Team ví dụ
-                  `team01/team01`, tài khoản quản trị mặc định là `admin/admin`
-                  và `systemadmin/systemadmin`.
+                  All credentials are read from `database.json`. Example team
+                  `team01/team01`, default admin account is `admin/admin` and
+                  `systemadmin/systemadmin`.
                 </Typography.Text>
               </Flex>
             }
@@ -81,7 +81,7 @@ export function LoginPage() {
 
               if (matchedAccount) {
                 login({username, role: matchedAccount.role, teamId: null});
-                message.success(`Đăng nhập ${matchedAccount.role} thành công`);
+                message.success(`Login successful as ${matchedAccount.role}`);
                 navigate("/stations");
                 return;
               }
@@ -92,7 +92,7 @@ export function LoginPage() {
               );
 
               if (!matchedTeam) {
-                message.error("Sai username hoặc password");
+                message.error("Invalid username or password");
                 return;
               }
 
@@ -101,15 +101,15 @@ export function LoginPage() {
                 role: "user",
                 teamId: matchedTeam.id,
               });
-              message.success("Đăng nhập thành công");
+              message.success("Login successful");
               navigate("/stations");
             }}>
             <Form.Item
               label="Username"
               name="username"
               rules={[
-                {required: true, message: "Vui lòng nhập username"},
-                {min: 3, message: "Username tối thiểu 3 ký tự"},
+                {required: true, message: "Please enter your username"},
+                {min: 3, message: "Username must be at least 3 characters"},
               ]}>
               <Input prefix={<UserOutlined />} placeholder="team.lead" />
             </Form.Item>
@@ -118,8 +118,8 @@ export function LoginPage() {
               label="Password"
               name="password"
               rules={[
-                {required: true, message: "Vui lòng nhập password"},
-                {min: 5, message: "Password tối thiểu 5 ký tự"},
+                {required: true, message: "Please enter your password"},
+                {min: 5, message: "Password must be at least 5 characters"},
               ]}>
               <Input.Password prefix={<LockOutlined />} placeholder="••••••" />
             </Form.Item>

@@ -31,7 +31,7 @@ II. Màn hình:
 - Đối với role user thì click vào list item:
 
 * Nếu Status = New (Flow 1): Mở camera điện thoại để scan QR, scan thành công thì chuyển status thành In progress, navigate sang màn hình (Screen #3).
-* Nếu Status = In progress: Show confirm "Bạn có muốn chơi lại không?". Nếu Có quay lại (Flow 1)
+* Nếu Status = In progress: navigate sang màn hình (Screen #3).
 * Nếu Status = Finish: Disable item, không cho click.
 
 - Đối với role khác user thì click vào list item: navigate sang màn hình (Screen #3)

@@ -2,6 +2,7 @@ import {
   CheckCircleOutlined,
   ReloadOutlined,
   SaveOutlined,
+  YoutubeOutlined,
 } from "@ant-design/icons";
 import {
   Alert,
@@ -85,29 +86,48 @@ export function StationDetailPage() {
     );
   }
 
+  const openLinkInNewTab = (url: string | undefined) => {
+    if (!url) {
+      message.warning("Không có link video");
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <Flex vertical gap={16} className="full-width">
       <Card className="surface-card compact-card">
         <Typography.Title level={3} className="section-title">
-          Detail {station.name}
+          {station.name}
         </Typography.Title>
-        <Descriptions column={1} size="small">
-          <Descriptions.Item label="Station ID">
-            {station.stationId}
+        <Typography.Paragraph label="Description">
+          {station.description}
+        </Typography.Paragraph>
+        <Descriptions column={2} size="small">
+          <Descriptions.Item label="Playing Teams" span={2}>
+            2
           </Descriptions.Item>
-          <Descriptions.Item label="Station Description">
-            {station.name}
+          <Descriptions.Item label="Estimated Duration">
+            {station.duration ? `${station.duration} minutes` : "N/A"}
           </Descriptions.Item>
-          <Descriptions.Item label="Team ID">{team.id}</Descriptions.Item>
-          <Descriptions.Item label="Team Name">{team.name}</Descriptions.Item>
+          <Descriptions.Item label="Score">{station.score}</Descriptions.Item>
           <Descriptions.Item label="Start Time">
             {formatDateTime(station.startTime)}
           </Descriptions.Item>
           <Descriptions.Item label="End Time">
             {formatDateTime(station.endTime)}
           </Descriptions.Item>
-          <Descriptions.Item label="Score">{station.score}</Descriptions.Item>
         </Descriptions>
+
+        {station.youtubeUrl && (
+          <Button
+            severity="primary"
+            className="full-width mt-4"
+            icon={<YoutubeOutlined />}
+            onClick={() => openLinkInNewTab(station.youtubeUrl)}>
+            Watch Video
+          </Button>
+        )}
       </Card>
 
       {session.role === "user" ?
@@ -124,6 +144,7 @@ export function StationDetailPage() {
             <Button
               type="primary"
               size="large"
+              shape="round"
               icon={<CheckCircleOutlined />}
               onClick={() => setIsFinishScannerOpen(true)}>
               Finish
@@ -136,14 +157,15 @@ export function StationDetailPage() {
             layout="vertical"
             onFinish={(values) => {
               modal.confirm({
-                title: "Xác nhận lưu điểm",
+                centered: true,
+                title: "Save Score?",
                 content:
-                  "Điểm và endTime sẽ được cập nhật theo thời điểm hiện tại.",
+                  "The score and endTime will be updated to the current time.",
                 okText: "Save",
-                cancelText: "Hủy",
+                cancelText: "Cancel",
                 onOk: () => {
                   finishStation(activeTeamId, station.stationId, values.score);
-                  message.success("Đã lưu điểm thành công");
+                  message.success("Score saved successfully");
                   navigate("/stations");
                 },
               });
@@ -163,13 +185,15 @@ export function StationDetailPage() {
                 icon={<ReloadOutlined />}
                 onClick={() => {
                   modal.confirm({
+                    centered: true,
                     title: "Reset status?",
-                    content: "Trạng thái sẽ quay về New và xóa start/end time.",
+                    content:
+                      "The status will revert to New and start/end time will be cleared.",
                     okText: "Reset",
-                    cancelText: "Hủy",
+                    cancelText: "Cancel",
                     onOk: () => {
                       resetStation(activeTeamId, station.stationId);
-                      message.success("Đã reset trạng thái");
+                      message.success("Status reset successfully");
                       navigate("/stations");
                     },
                   });
@@ -182,7 +206,8 @@ export function StationDetailPage() {
       }
 
       <Modal
-        title="Quét QR để hoàn thành"
+        centered
+        title="Scan QR to Complete Station"
         open={isFinishScannerOpen}
         onCancel={() => setIsFinishScannerOpen(false)}
         onOk={() => {
@@ -191,7 +216,7 @@ export function StationDetailPage() {
           setIsScoreModalOpen(true);
         }}
         okText="Scan QR code successfully"
-        cancelText="Đóng">
+        cancelText="Close">
         <Alert
           type="info"
           showIcon
@@ -199,8 +224,8 @@ export function StationDetailPage() {
             <Flex vertical gap={4}>
               <Typography.Text strong>Camera mobile simulation</Typography.Text>
               <Typography.Text>
-                Sau khi scan thành công, app sẽ yêu cầu nhập điểm trước khi đóng
-                phiên chơi.
+                After a successful scan, the app will prompt for score input
+                before closing the game session.
               </Typography.Text>
             </Flex>
           }
@@ -208,7 +233,8 @@ export function StationDetailPage() {
       </Modal>
 
       <Modal
-        title="Nhập điểm"
+        centered
+        title="Enter Score"
         open={isScoreModalOpen}
         onCancel={() => setIsScoreModalOpen(false)}
         footer={null}>
@@ -217,14 +243,15 @@ export function StationDetailPage() {
           layout="vertical"
           onFinish={(values) => {
             modal.confirm({
-              title: "Xác nhận hoàn thành trạm",
+              centered: true,
+              title: "Confirm Station Completion",
               content:
-                "Điểm sẽ được lưu và endTime sẽ cập nhật theo thời điểm scan thành công.",
-              okText: "Xác nhận",
-              cancelText: "Hủy",
+                "The score will be saved and the endTime will be updated according to the successful scan time.",
+              okText: "Confirm",
+              cancelText: "Cancel",
               onOk: () => {
                 finishStation(activeTeamId, station.stationId, values.score);
-                message.success("Hoàn thành trạm thành công");
+                message.success("Station completed successfully");
                 setIsScoreModalOpen(false);
                 navigate("/stations");
               },
@@ -238,7 +265,7 @@ export function StationDetailPage() {
             <InputNumber min={0} max={1000} className="full-width" />
           </Form.Item>
           <Button type="primary" htmlType="submit" block>
-            Lưu điểm
+            Save Score
           </Button>
         </Form>
       </Modal>

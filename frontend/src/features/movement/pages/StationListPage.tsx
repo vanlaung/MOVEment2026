@@ -1,4 +1,4 @@
-import {EditOutlined, SaveOutlined} from "@ant-design/icons";
+import {EditOutlined, SaveOutlined, YoutubeOutlined} from "@ant-design/icons";
 import {
   Alert,
   App as AntdApp,
@@ -14,6 +14,7 @@ import {
   Select,
   Tag,
   Typography,
+  Descriptions,
 } from "antd";
 import find from "lodash/find";
 import sortBy from "lodash/sortBy";
@@ -72,51 +73,47 @@ export function StationListPage() {
     }
 
     if (station.status === "In Progress") {
-      modal.confirm({
-        title: "Bạn có muốn chơi lại không?",
-        content:
-          "Nếu tiếp tục, trạng thái trạm sẽ được quét lại để mở màn hình chi tiết.",
-        okText: "Có",
-        cancelText: "Không",
-        onOk: () => setScanTarget(station),
-      });
+      navigate(`/stations/${station.stationId}`);
       return;
     }
 
     setScanTarget(station);
   };
 
+  const openLinkInNewTab = (url: string) => {
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (newWindow) newWindow.opener = null;
+  };
+
   return (
     <Flex vertical gap={16} className="full-width">
-      <Card className="surface-card compact-card">
-        <div className="section-head">
-          <div className="full-width">
-            <Typography.Title level={3} className="section-title">
-              Team hiện tại: {team.name}
+      <Alert
+        type="info"
+        description={
+          <>
+            <Typography.Title level={4} className="section-title">
+              {team.name}
             </Typography.Title>
-            <Flex gap={4} justify="space-between" align="center">
-              <Typography.Text className="muted-copy">
-                Total Score: {team.score}
-              </Typography.Text>
-              <Typography.Text className="muted-copy">
-                Finish: {team.finish}/{sortedStations.length}
-              </Typography.Text>
-            </Flex>
-          </div>
-        </div>
-      </Card>
+            <Descriptions column={2} size="small">
+              <Descriptions.Item label="Total Score">
+                {team.score}
+              </Descriptions.Item>
+              <Descriptions.Item label="Finish">
+                {team.finish}/{sortedStations.length}
+              </Descriptions.Item>
+            </Descriptions>
+          </>
+        }
+      />
 
       <List
         className="card-list"
         dataSource={sortedStations}
-        locale={{emptyText: <Empty description="Chưa có trạm" />}}
+        locale={{emptyText: <Empty description="No stations available" />}}
         renderItem={(station) => {
           return (
             <List.Item>
-              <Card
-                className="surface-card station-card"
-                hoverable
-                onClick={() => handleStationClick(station)}>
+              <Card className="surface-card station-card">
                 <div className="station-row">
                   <div className="full-width">
                     <Flex
@@ -132,26 +129,46 @@ export function StationListPage() {
                       </Tag>
                     </Flex>
                     <Typography.Paragraph className="muted-copy compact-copy">
-                      Description: {station.description}
+                      {station.description}
                     </Typography.Paragraph>
-                    <Typography.Paragraph className="muted-copy compact-copy">
-                      Duration: {station.duration}
-                    </Typography.Paragraph>
-                    <Flex gap={4} justify="space-between" align="center">
-                      <Typography.Text className="muted-copy compact-copy">
-                        {station.stationId}
-                      </Typography.Text>
-                      <Typography.Text className="muted-copy compact-copy">
-                        Start: {formatDateTime(station.startTime)}
-                      </Typography.Text>
-                    </Flex>
-                    <Flex gap={4} justify="space-between" align="center">
-                      <Typography.Text className="muted-copy compact-copy">
-                        Score: {station.score}
-                      </Typography.Text>
-                      <Typography.Text className="muted-copy compact-copy">
-                        End: {formatDateTime(station.endTime)}
-                      </Typography.Text>
+
+                    <Descriptions column={2} size="small">
+                      <Descriptions.Item label="Playing Teams" span={2}>
+                        2
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Estimated Duration">
+                        {station.duration ?
+                          `${station.duration} minutes`
+                        : "N/A"}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Score">
+                        {station.score}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Start Time">
+                        {formatDateTime(station.startTime)}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="End Time">
+                        {formatDateTime(station.endTime)}
+                      </Descriptions.Item>
+                    </Descriptions>
+
+                    <Flex
+                      justify="space-between"
+                      gap={8}
+                      className="full-width mt-4">
+                      {station.youtubeUrl && (
+                        <Button
+                          severity="primary"
+                          icon={<YoutubeOutlined />}
+                          onClick={() => openLinkInNewTab(station.youtubeUrl)}>
+                          Watch Video
+                        </Button>
+                      )}
+                      <Button
+                        type="primary"
+                        onClick={() => handleStationClick(station)}>
+                        {session.role === "user" ? "Play" : "Edit"}
+                      </Button>
                     </Flex>
                   </div>
 
@@ -178,7 +195,7 @@ export function StationListPage() {
       />
 
       <Drawer
-        title="Cập nhật nhanh trạm"
+        title="Quick Update Station"
         placement="bottom"
         open={Boolean(editingStation)}
         onClose={() => setEditingStation(null)}
@@ -192,10 +209,12 @@ export function StationListPage() {
             }
 
             modal.confirm({
-              title: "Xác nhận cập nhật trạm",
-              content: "Thay đổi này sẽ ghi đè trạng thái dummy data hiện tại.",
-              okText: "Lưu",
-              cancelText: "Hủy",
+              centered: true,
+              title: "Confirm Station Update",
+              content:
+                "This change will overwrite the current dummy data status.",
+              okText: "Save",
+              cancelText: "Cancel",
               onOk: () => {
                 const now = new Date().toISOString();
                 patchTeamStation(
@@ -214,7 +233,7 @@ export function StationListPage() {
                       : null,
                   },
                 );
-                message.success("Đã cập nhật trạm");
+                message.success("Station updated successfully");
                 setEditingStation(null);
               },
             });
@@ -243,7 +262,8 @@ export function StationListPage() {
       </Drawer>
 
       <Modal
-        title="Scan QR để bắt đầu"
+        centered
+        title="Scan QR to Start"
         open={Boolean(scanTarget)}
         onCancel={() => setScanTarget(null)}
         onOk={() => {
@@ -258,10 +278,10 @@ export function StationListPage() {
           navigate(`/stations/${stationId}`);
         }}
         okText="Scan QR code successfully"
-        cancelText="Đóng">
+        cancelText="Close">
         <Flex vertical gap={12} className="full-width">
           <Typography.Text>
-            Mô phỏng camera điện thoại cho trạm{" "}
+            Simulate phone camera for station{" "}
             <strong>{scanTarget?.name}</strong>.
           </Typography.Text>
           <Alert
@@ -269,10 +289,10 @@ export function StationListPage() {
             showIcon
             description={
               <Flex vertical gap={4}>
-                <Typography.Text strong>Luồng user</Typography.Text>
+                <Typography.Text strong>User Flow</Typography.Text>
                 <Typography.Text>
-                  Sau khi scan thành công, trạng thái sẽ chuyển sang In Progress
-                  và điều hướng sang màn hình Station Detail.
+                  After a successful scan, the status will change to In Progress
+                  and navigate to the Station Detail screen.
                 </Typography.Text>
               </Flex>
             }

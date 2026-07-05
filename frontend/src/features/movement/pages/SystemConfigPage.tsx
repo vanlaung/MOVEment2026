@@ -1,14 +1,5 @@
-import {EditOutlined} from "@ant-design/icons";
-import {
-  App as AntdApp,
-  Button,
-  Card,
-  Flex,
-  List,
-  Space,
-  Tabs,
-  Typography,
-} from "antd";
+import {EditOutlined, DeleteOutlined} from "@ant-design/icons";
+import {App as AntdApp, Button, Card, Flex, List, Tabs, Typography} from "antd";
 import {useNavigate} from "react-router-dom";
 import {StationsMapPanel} from "../components/StationsMapPanel";
 import {useMovementStore} from "../store";
@@ -60,7 +51,7 @@ export function SystemConfigPage() {
                             {station.description}
                           </Typography.Text>
                         </Flex>
-                        <Space>
+                        <Flex gap={8} className="full-width">
                           <Button
                             icon={<EditOutlined />}
                             onClick={() =>
@@ -69,23 +60,28 @@ export function SystemConfigPage() {
                             Edit
                           </Button>
                           <Button
-                            danger
+                            color="danger"
+                            variant="filled"
+                            icon={<DeleteOutlined />}
                             onClick={() => {
                               modal.confirm({
+                                centered: true,
                                 title: "Delete station?",
                                 content:
-                                  "Tất cả tiến độ theo trạm này sẽ bị xóa khỏi dummy data.",
+                                  "All progress for this station will be removed from the dummy data.",
                                 okText: "Delete",
-                                cancelText: "Hủy",
+                                cancelText: "Cancel",
                                 onOk: () => {
                                   deleteStationDefinition(station.id);
-                                  message.success("Đã xóa trạm");
+                                  message.success(
+                                    "Station deleted successfully",
+                                  );
                                 },
                               });
                             }}>
                             Delete
                           </Button>
-                        </Space>
+                        </Flex>
                       </div>
                     </Card>
                   </List.Item>
@@ -123,7 +119,7 @@ export function SystemConfigPage() {
                             {team.totalTimeMinutes} min
                           </Typography.Text>
                         </Flex>
-                        <Space>
+                        <Flex gap={8} className="full-width">
                           <Button
                             icon={<EditOutlined />}
                             onClick={() =>
@@ -132,23 +128,26 @@ export function SystemConfigPage() {
                             Edit
                           </Button>
                           <Button
-                            danger
+                            color="danger"
+                            variant="filled"
+                            icon={<DeleteOutlined />}
                             onClick={() => {
                               modal.confirm({
+                                centered: true,
                                 title: "Delete team?",
                                 content:
-                                  "Team và toàn bộ tiến độ trạm của team này sẽ bị xóa.",
+                                  "Team will be removed from the system and all progress will be lost.",
                                 okText: "Delete",
-                                cancelText: "Hủy",
+                                cancelText: "Cancel",
                                 onOk: () => {
                                   deleteTeam(team.id);
-                                  message.success("Đã xóa team");
+                                  message.success("Team deleted successfully");
                                 },
                               });
                             }}>
                             Delete
                           </Button>
-                        </Space>
+                        </Flex>
                       </div>
                     </Card>
                   </List.Item>

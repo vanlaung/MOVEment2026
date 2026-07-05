@@ -40,8 +40,7 @@ export function TeamEditorPage() {
 
   return (
     <Drawer
-      title={isEditing ? "Create/Edit Team" : "Create Team"}
-      placement="bottom"
+      title={isEditing ? "Edit Team" : "Create Team"}
       onClose={handleClose}
       open={isOpen}>
       <Form
@@ -53,20 +52,25 @@ export function TeamEditorPage() {
           );
 
           if (duplicate) {
-            message.error("ID team đã tồn tại");
+            message.error(
+              "Team ID already exists. Please choose a different ID.",
+            );
             return;
           }
 
           modal.confirm({
-            title: isEditing ? "Cập nhật team?" : "Tạo team mới?",
+            centered: true,
+            title: isEditing ? "Update Team?" : "Create New Team?",
             content:
-              "Team mới sẽ được khởi tạo toàn bộ station ở trạng thái New.",
-            okText: "Xác nhận",
-            cancelText: "Hủy",
+              "The new team will have all stations initialized to the 'New' state.",
+            okText: "Confirm",
+            cancelText: "Cancel",
             onOk: () => {
               saveTeam(values, team?.id);
               message.success(
-                isEditing ? "Đã cập nhật team" : "Đã tạo team mới",
+                isEditing ?
+                  "Team updated successfully"
+                : "New team created successfully",
               );
               handleClose();
             },
@@ -75,27 +79,27 @@ export function TeamEditorPage() {
         <Form.Item
           label="ID"
           name="id"
-          rules={[{required: true, message: "Vui lòng nhập id team"}]}>
+          rules={[{required: true, message: "Please enter a team ID"}]}>
           <Input disabled={isEditing} placeholder="TEAM11" />
         </Form.Item>
         <Form.Item
           label="Name"
           name="name"
-          rules={[{required: true, message: "Vui lòng nhập tên team"}]}>
+          rules={[{required: true, message: "Please enter a team name"}]}>
           <Input placeholder="Kite Crew" />
         </Form.Item>
         <Form.Item
           label="Username"
           name="username"
-          rules={[{required: true, message: "Vui lòng nhập username team"}]}>
+          rules={[{required: true, message: "Please enter a team username"}]}>
           <Input placeholder="team11" />
         </Form.Item>
         <Form.Item
           label="Password"
           name="password"
           rules={[
-            {required: true, message: "Vui lòng nhập password team"},
-            {min: 5, message: "Password tối thiểu 5 ký tự"},
+            {required: true, message: "Please enter a team password"},
+            {min: 5, message: "Password must be at least 5 characters long"},
           ]}>
           <Input.Password placeholder="team11" />
         </Form.Item>
@@ -106,7 +110,7 @@ export function TeamEditorPage() {
           <InputNumber min={0} max={99} className="full-width" />
         </Form.Item>
         <Form.Item
-          label="totalTime (min)"
+          label="Total Time (min)"
           name="totalTimeMinutes"
           rules={[{required: true}]}>
           <InputNumber min={0} className="full-width" />

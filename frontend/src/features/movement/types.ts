@@ -75,7 +75,7 @@ export type SqlStation = {
   game_type: string | null;
   description: string | null;
   points: number;
-  youtube_url: string | null;
+  youtubeUrl: string | null;
   clue_text: string | null;
   latitude: number | null;
   longitude: number | null;

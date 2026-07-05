@@ -21,6 +21,10 @@ export function StationEditorPage() {
     (item) => item.id === params.stationId,
   );
   const isEditing = Boolean(station);
+  const layout = {
+    labelCol: {span: 8},
+    wrapperCol: {span: 16},
+  };
 
   useEffect(() => {
     if (station) {
@@ -38,33 +42,37 @@ export function StationEditorPage() {
 
   return (
     <Drawer
-      title={isEditing ? "Create/Edit Station" : "Create Station"}
-      placement="bottom"
+      title={isEditing ? "Edit Station" : "Create Station"}
       onClose={handleClose}
       open={isOpen}>
       <Form
         form={form}
-        layout="vertical"
+        {...layout}
         onFinish={(values) => {
           const duplicate = stationDefinitions.some(
             (item) => item.id === values.id && item.id !== station?.id,
           );
 
           if (duplicate) {
-            message.error("ID trạm đã tồn tại");
+            message.error(
+              "Station ID already exists. Please choose a different ID.",
+            );
             return;
           }
 
           modal.confirm({
-            title: isEditing ? "Cập nhật station?" : "Tạo station mới?",
+            centered: true,
+            title: isEditing ? "Update Station?" : "Create New Station?",
             content:
-              "Danh sách trạm của tất cả team sẽ đồng bộ theo thay đổi này.",
-            okText: "Xác nhận",
-            cancelText: "Hủy",
+              "The station list for all teams will be synchronized with this change.",
+            okText: "Confirm",
+            cancelText: "Cancel",
             onOk: () => {
               saveStationDefinition(values, station?.id);
               message.success(
-                isEditing ? "Đã cập nhật station" : "Đã tạo station mới",
+                isEditing ?
+                  "Station updated successfully"
+                : "New station created successfully",
               );
               handleClose();
             },
@@ -73,26 +81,35 @@ export function StationEditorPage() {
         <Form.Item
           label="ID"
           name="id"
-          rules={[{required: true, message: "Vui lòng nhập id"}]}>
+          rules={[
+            {required: true, message: "Please enter an ID for the station"},
+          ]}>
           <Input disabled={isEditing} placeholder="ST06" />
         </Form.Item>
         <Form.Item
           label="Name"
           name="name"
-          rules={[{required: true, message: "Vui lòng nhập tên trạm"}]}>
-          <Input placeholder="Mê cung tre" />
+          rules={[
+            {required: true, message: "Please enter a name for the station"},
+          ]}>
+          <Input placeholder="Maze" />
+        </Form.Item>
+        <Form.Item label="Description" name="description">
+          <Input placeholder="Station description" />
         </Form.Item>
         <Form.Item
-          label="Description"
-          name="description"
-          rules={[{required: true, message: "Vui lòng nhập mô tả trạm"}]}>
-          <Input placeholder="Mô tả trạm" />
-        </Form.Item>
-        <Form.Item
-          label="Duration (minutes)"
+          label="Estimated Duration (minutes)"
           name="durationMinutes"
-          rules={[{required: true, message: "Vui lòng nhập thời lượng trạm"}]}>
-          <Input placeholder="Thời lượng trạm" type="number" />
+          rules={[
+            {
+              required: true,
+              message: "Please enter the estimated duration for the station",
+            },
+          ]}>
+          <Input placeholder="Estimated duration" type="number" />
+        </Form.Item>
+        <Form.Item label="YouTube Video URL" name="youtubeUrl">
+          <Input placeholder="YouTube video URL" />
         </Form.Item>
         <Button type="primary" htmlType="submit" block>
           {isEditing ? "Update Station Info" : "Create Station"}

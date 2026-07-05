@@ -11,6 +11,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {ROLE_LABELS} from "../constants";
 import {useMovementStore} from "../store";
 import logo from "../../../assets/ST-logo.png";
+import "./AppFrame.scss";
 
 type AppFrameProps = Readonly<PropsWithChildren>;
 
@@ -69,57 +70,72 @@ export function AppFrame({children}: AppFrameProps) {
         </div>
       </Layout.Header>
 
-      <div className="nav-strip">
-        {session.role !== "user" && (
-          <Button
-            type={
-              location.pathname.startsWith("/teams") ? "primary" : "default"
-            }
-            icon={<TeamOutlined />}
-            onClick={() => navigate("/teams")}>
-            Teams ({totalTeams})
-          </Button>
-        )}
-        <Button
-          type={
-            (
-              location.pathname.startsWith("/stations") &&
-              !location.pathname.startsWith("/stations/map")
-            ) ?
-              "primary"
-            : "default"
-          }
-          icon={<QrcodeOutlined />}
-          onClick={() => navigate("/stations")}>
-          Stations ({totalStation})
-        </Button>
-        {session.role === "user" && (
-          <Button
-            type={
-              location.pathname.startsWith("/stations/map") ?
-                "primary"
-              : "default"
-            }
-            icon={<EnvironmentOutlined />}
-            onClick={() => navigate("/stations/map")}>
-            Map
-          </Button>
-        )}
-        {session.role !== "user" && (
-          <Button
-            type={
-              location.pathname.startsWith("/system-config") ?
-                "primary"
-              : "default"
-            }
-            icon={<SettingOutlined />}
-            onClick={() => navigate("/system-config")}>
-            Config
-          </Button>
-        )}
-      </div>
-
       <Layout.Content className="page-stack">{children}</Layout.Content>
+      <Layout.Footer className="shell-footer">
+        <Flex gap={8} justify="center" align="center" className="full-width">
+          {session.role !== "user" && (
+            <Button
+              size="large"
+              shape="round"
+              type={
+                location.pathname.startsWith("/teams") ? "primary" : "default"
+              }
+              icon={<TeamOutlined />}
+              onClick={() => navigate("/teams")}>
+              {location.pathname.startsWith("/teams") ?
+                `Teams (${totalTeams})`
+              : totalTeams}
+            </Button>
+          )}
+          <Button
+            size="large"
+            shape="round"
+            type={
+              (
+                location.pathname.startsWith("/stations") &&
+                !location.pathname.startsWith("/stations/map")
+              ) ?
+                "primary"
+              : "default"
+            }
+            icon={<QrcodeOutlined />}
+            onClick={() => navigate("/stations")}>
+            {location.pathname.startsWith("/stations") ?
+              `Stations (${totalStation})`
+            : totalStation}
+          </Button>
+          {session.role === "user" && (
+            <Button
+              size="large"
+              shape="round"
+              type={
+                location.pathname.startsWith("/stations/map") ?
+                  "primary"
+                : "default"
+              }
+              icon={<EnvironmentOutlined />}
+              onClick={() => navigate("/stations/map")}>
+              Map
+            </Button>
+          )}
+          {session.role !== "user" && (
+            <Button
+              size="large"
+              shape="round"
+              type={
+                location.pathname.startsWith("/system-config") ?
+                  "primary"
+                : "default"
+              }
+              icon={<SettingOutlined />}
+              onClick={() => navigate("/system-config")}>
+              {location.pathname.startsWith("/system-config") ?
+                "System Config"
+              : ""}
+            </Button>
+          )}
+        </Flex>
+      </Layout.Footer>
     </Layout>
   );
 }

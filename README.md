@@ -152,7 +152,7 @@ CREATE TABLE stations (
     name VARCHAR(255) NOT NULL,
     game_type VARCHAR(100),
     points INT DEFAULT 0,
-    youtube_url VARCHAR(500),
+    youtubeUrl VARCHAR(500),
     clue_text TEXT,
     latitude NUMERIC(10, 7),
     longitude NUMERIC(10, 7),
