@@ -1,4 +1,4 @@
-import {App as AntdApp, Button, Drawer, Form, Input, Switch} from "antd";
+import {App as AntdApp, Button, Drawer, Form, Input} from "antd";
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {useMovementStore} from "../store";
@@ -28,7 +28,7 @@ export function StationEditorPage() {
       return;
     }
 
-    form.setFieldsValue({id: "", name: "", isEnable: true});
+    form.setFieldsValue({id: "", name: ""});
   }, [form, station]);
 
   const handleClose = () => {
@@ -41,8 +41,7 @@ export function StationEditorPage() {
       title={isEditing ? "Create/Edit Station" : "Create Station"}
       placement="bottom"
       onClose={handleClose}
-      open={isOpen}
-      height="auto">
+      open={isOpen}>
       <Form
         form={form}
         layout="vertical"
@@ -83,8 +82,17 @@ export function StationEditorPage() {
           rules={[{required: true, message: "Vui lòng nhập tên trạm"}]}>
           <Input placeholder="Mê cung tre" />
         </Form.Item>
-        <Form.Item label="isEnable" name="isEnable" valuePropName="checked">
-          <Switch />
+        <Form.Item
+          label="Description"
+          name="description"
+          rules={[{required: true, message: "Vui lòng nhập mô tả trạm"}]}>
+          <Input placeholder="Mô tả trạm" />
+        </Form.Item>
+        <Form.Item
+          label="Duration (minutes)"
+          name="durationMinutes"
+          rules={[{required: true, message: "Vui lòng nhập thời lượng trạm"}]}>
+          <Input placeholder="Thời lượng trạm" type="number" />
         </Form.Item>
         <Button type="primary" htmlType="submit" block>
           {isEditing ? "Update Station Info" : "Create Station"}

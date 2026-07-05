@@ -27,14 +27,18 @@ export type Team = {
 export type StationDefinition = {
   id: string;
   name: string;
-  isEnable: boolean;
+  latitude?: number | null;
+  longitude?: number | null;
+  markerX?: number | null;
+  markerY?: number | null;
 };
 
 export type TeamStation = {
   id: string;
   name: string;
-  isEnable: boolean;
   status: StationStatus;
+  description?: string | null;
+  durationMinutes: number;
   score: number;
   startTime: string | null;
   endTime: string | null;
@@ -45,7 +49,8 @@ export type TeamStation = {
 export type StationFormValues = {
   id: string;
   name: string;
-  isEnable: boolean;
+  description?: string | null;
+  durationMinutes: number;
 };
 
 export type TeamFormValues = {
@@ -58,25 +63,26 @@ export type TeamFormValues = {
   totalTimeMinutes: number;
 };
 
-export type SqlUserRole = "admin" | "station_manager" | "system_admin";
-
 export type SqlUser = {
   id: number;
   username: string;
   password_hash: string;
-  role: SqlUserRole;
-  station_id: string | null;
 };
 
 export type SqlStation = {
   id: string;
   name: string;
   game_type: string | null;
+  description: string | null;
   points: number;
   youtube_url: string | null;
   clue_text: string | null;
   latitude: number | null;
   longitude: number | null;
+  position: {
+    x: number | null;
+    y: number | null;
+  };
 };
 
 export type SqlTeam = {
@@ -141,6 +147,10 @@ export type MovementStore = {
   saveStationDefinition: (
     values: StationFormValues,
     editingId?: string,
+  ) => void;
+  updateStationMarker: (
+    stationId: string,
+    patch: Pick<StationDefinition, "markerX" | "markerY">,
   ) => void;
   deleteTeam: (teamId: string) => void;
   saveTeam: (values: TeamFormValues, editingId?: string) => void;

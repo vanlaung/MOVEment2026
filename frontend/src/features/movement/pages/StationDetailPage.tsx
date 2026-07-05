@@ -1,6 +1,5 @@
 import {
   CheckCircleOutlined,
-  ClockCircleOutlined,
   ReloadOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
@@ -96,6 +95,9 @@ export function StationDetailPage() {
           <Descriptions.Item label="Station ID">
             {station.stationId}
           </Descriptions.Item>
+          <Descriptions.Item label="Station Description">
+            {station.name}
+          </Descriptions.Item>
           <Descriptions.Item label="Team ID">{team.id}</Descriptions.Item>
           <Descriptions.Item label="Team Name">{team.name}</Descriptions.Item>
           <Descriptions.Item label="Start Time">
@@ -110,18 +112,15 @@ export function StationDetailPage() {
 
       {session.role === "user" ?
         <Card className="surface-card">
-          <Flex vertical gap={16} className="full-width">
-            <div>
-              <Typography.Text className="muted-copy">Clock</Typography.Text>
-              <Space size={12} align="center">
-                <ClockCircleOutlined />
-                <Typography.Title
-                  level={2}
-                  className="section-title live-clock">
-                  {elapsed}
-                </Typography.Title>
-              </Space>
-            </div>
+          <Flex
+            vertical
+            gap={16}
+            align="center"
+            justify="center"
+            className="full-width">
+            <Typography.Title level={2} className="section-title live-clock">
+              {elapsed}
+            </Typography.Title>
             <Button
               type="primary"
               size="large"

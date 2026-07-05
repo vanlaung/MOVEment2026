@@ -72,12 +72,10 @@ function createNewTeamStation(
   teamId: string,
   stationId: string,
   name: string,
-  isEnable: boolean,
 ): TeamStation {
   return {
     id: `${teamId}-${stationId}`,
     name,
-    isEnable,
     status: "New",
     score: 0,
     startTime: null,
@@ -149,10 +147,7 @@ function upsertStationDefinition(
   );
 
   if (!hasStation) {
-    return [
-      ...stations,
-      createNewTeamStation(teamId, values.id, values.name, values.isEnable),
-    ];
+    return [...stations, createNewTeamStation(teamId, values.id, values.name)];
   }
 
   return stations.map((station) => {
@@ -163,7 +158,6 @@ function upsertStationDefinition(
     return {
       ...station,
       name: values.name,
-      isEnable: values.isEnable,
       stationId: values.id,
       id: `${teamId}-${values.id}`,
     };
@@ -441,6 +435,13 @@ export const useMovementStore = create<MovementStore>((set) => ({
       };
     });
   },
+  updateStationMarker: (stationId, patch) => {
+    set((state) => ({
+      stationDefinitions: state.stationDefinitions.map((station) =>
+        station.id === stationId ? {...station, ...patch} : station,
+      ),
+    }));
+  },
   deleteTeam: (teamId) => {
     set((state) => {
       const teams = state.teams.filter((team) => team.id !== teamId);
@@ -514,12 +515,7 @@ export const useMovementStore = create<MovementStore>((set) => ({
       const nextTeamStations = {
         ...state.teamStations,
         [values.id]: state.stationDefinitions.map((station) =>
-          createNewTeamStation(
-            values.id,
-            station.id,
-            station.name,
-            station.isEnable,
-          ),
+          createNewTeamStation(values.id, station.id, station.name),
         ),
       };
 

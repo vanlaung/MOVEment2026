@@ -1,4 +1,5 @@
 import {
+  EnvironmentOutlined,
   LogoutOutlined,
   QrcodeOutlined,
   SettingOutlined,
@@ -36,7 +37,6 @@ export function AppFrame({children}: AppFrameProps) {
       <Layout.Header className="shell-header">
         <div className="full-width">
           <Flex
-            horizontal
             gap={12}
             justify="space-between"
             align="center"
@@ -60,7 +60,7 @@ export function AppFrame({children}: AppFrameProps) {
               {ROLE_LABELS[session.role]}
             </Button>
           </Flex>
-          <Flex horizontal gap={12} justify="space-between" align="center">
+          <Flex gap={12} justify="space-between" align="center">
             <div className="brand-mark">MOVEment 2026</div>
             <Typography.Text className="brand-subtitle">
               Current team: <b>{activeTeam?.name ?? "No team"}</b>
@@ -70,14 +70,6 @@ export function AppFrame({children}: AppFrameProps) {
       </Layout.Header>
 
       <div className="nav-strip">
-        <Button
-          type={
-            location.pathname.startsWith("/stations") ? "primary" : "default"
-          }
-          icon={<QrcodeOutlined />}
-          onClick={() => navigate("/stations")}>
-          Stations ({totalStation})
-        </Button>
         {session.role !== "user" && (
           <Button
             type={
@@ -88,7 +80,32 @@ export function AppFrame({children}: AppFrameProps) {
             Teams ({totalTeams})
           </Button>
         )}
-        {session.role === "system-admin" && (
+        <Button
+          type={
+            (
+              location.pathname.startsWith("/stations") &&
+              !location.pathname.startsWith("/stations/map")
+            ) ?
+              "primary"
+            : "default"
+          }
+          icon={<QrcodeOutlined />}
+          onClick={() => navigate("/stations")}>
+          Stations ({totalStation})
+        </Button>
+        {session.role === "user" && (
+          <Button
+            type={
+              location.pathname.startsWith("/stations/map") ?
+                "primary"
+              : "default"
+            }
+            icon={<EnvironmentOutlined />}
+            onClick={() => navigate("/stations/map")}>
+            Map
+          </Button>
+        )}
+        {session.role !== "user" && (
           <Button
             type={
               location.pathname.startsWith("/system-config") ?

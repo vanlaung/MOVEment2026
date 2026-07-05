@@ -12,7 +12,6 @@ import {
   List,
   Modal,
   Select,
-  Switch,
   Tag,
   Typography,
 } from "antd";
@@ -29,7 +28,7 @@ import {
   getStationStatusColor,
 } from "../utils";
 
-type QuickEditFormValues = Pick<TeamStation, "status" | "score" | "isEnable">;
+type QuickEditFormValues = Pick<TeamStation, "status" | "score">;
 
 export function StationListPage() {
   const navigate = useNavigate();
@@ -132,6 +131,12 @@ export function StationListPage() {
                         {station.status}
                       </Tag>
                     </Flex>
+                    <Typography.Paragraph className="muted-copy compact-copy">
+                      Description: {station.description}
+                    </Typography.Paragraph>
+                    <Typography.Paragraph className="muted-copy compact-copy">
+                      Duration: {station.duration}
+                    </Typography.Paragraph>
                     <Flex gap={4} justify="space-between" align="center">
                       <Typography.Text className="muted-copy compact-copy">
                         {station.stationId}
@@ -159,7 +164,6 @@ export function StationListPage() {
                         quickEditForm.setFieldsValue({
                           status: station.status,
                           score: station.score,
-                          isEnable: station.isEnable,
                         });
                         setEditingStation(station);
                       }}>
@@ -200,7 +204,6 @@ export function StationListPage() {
                   {
                     status: values.status,
                     score: values.score,
-                    isEnable: values.isEnable,
                     startTime:
                       values.status === "New" ?
                         null
@@ -227,9 +230,6 @@ export function StationListPage() {
           </Form.Item>
           <Form.Item label="Score" name="score" rules={[{required: true}]}>
             <InputNumber min={0} max={1000} className="full-width" />
-          </Form.Item>
-          <Form.Item label="Is Enable" name="isEnable" valuePropName="checked">
-            <Switch />
           </Form.Item>
 
           <Button

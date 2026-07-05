@@ -42,7 +42,6 @@ function createSeededStations(
     return {
       id: `${team.id}-${station.id}`,
       name: station.name,
-      isEnable: station.isEnable,
       status,
       score,
       startTime,
@@ -86,7 +85,7 @@ function normalizeSqlUsers(users?: SqlUser[]) {
   return users.map<AuthAccount>((user) => ({
     username: user.username,
     password: user.password_hash,
-    role: user.role,
+    role: "admin",
   }));
 }
 
@@ -95,11 +94,7 @@ function normalizeSqlStations(seed?: LocalDatabaseSeed) {
     return null;
   }
 
-  return seed.stations.map<StationDefinition>((station) => ({
-    id: station.id,
-    name: station.name,
-    isEnable: true,
-  }));
+  return seed.stations;
 }
 
 function normalizeSqlTeams(seed?: LocalDatabaseSeed) {
@@ -148,7 +143,8 @@ function buildTeamStationsFromSqlProgress(
     acc[team.id] = definitions.map((station) => ({
       id: `${team.id}-${station.id}`,
       name: station.name,
-      isEnable: station.isEnable,
+      description: station.description,
+      durationMinutes: station.durationMinutes,
       status: "New",
       score: 0,
       startTime: null,
@@ -238,20 +234,24 @@ export function normalizeDatabaseSeed(seed?: LocalDatabaseSeed): LocalDatabase {
     (seed?.stationDefinitions?.length ?
       seed.stationDefinitions
     : DEFAULT_DATABASE.stationDefinitions);
-  const baseTeams =
-    sqlTeams ?? (seed?.teams?.length ? seed.teams : DEFAULT_DATABASE.teams);
+  const seedTeams = seed?.teams?.length ? seed.teams : DEFAULT_DATABASE.teams;
+  const baseTeams = sqlTeams ?? seedTeams;
   const authAccounts =
     sqlAuthAccounts ?? normalizeAuthAccounts(seed?.authAccounts);
-  const teamStations =
-    seed?.teamStations && Object.keys(seed.teamStations).length > 0 ?
-      seed.teamStations
-    : seed?.team_station_progress ?
-      buildTeamStationsFromSqlProgress(
-        baseTeams,
-        stationDefinitions,
-        seed.team_station_progress,
-      )
-    : createInitialTeamStations(baseTeams, stationDefinitions);
+
+  let teamStations: Record<string, TeamStation[]>;
+  if (seed?.teamStations && Object.keys(seed.teamStations).length > 0) {
+    teamStations = seed.teamStations;
+  } else if (seed?.team_station_progress) {
+    teamStations = buildTeamStationsFromSqlProgress(
+      baseTeams,
+      stationDefinitions,
+      seed.team_station_progress,
+    );
+  } else {
+    teamStations = createInitialTeamStations(baseTeams, stationDefinitions);
+  }
+
   const teams = syncTeamsWithStations(baseTeams, teamStations);
   const activeTeamId =
     teams.some((team) => team.id === seed?.activeTeamId) ?
@@ -298,10 +298,6 @@ export function getDisabledReason(
 ) {
   if (station.status === "Finish") {
     return "Trạm đã hoàn thành";
-  }
-
-  if (!station.isEnable) {
-    return "Trạm đang bị quản trị viên tạm khóa";
   }
 
   if (activeStation && activeStation.stationId !== station.stationId) {

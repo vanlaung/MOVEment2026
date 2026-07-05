@@ -3,16 +3,12 @@
     {
       "id": 1,
       "username": "admin",
-      "password_hash": "admin",
-      "role": "admin",
-      "station_id": null
+      "password_hash": "admin"
     },
     {
       "id": 2,
-      "username": "systemadmin",
-      "password_hash": "systemadmin",
-      "role": "system-admin",
-      "station_id": null
+      "username": "system-admin",
+      "password_hash": "system-admin"
     }
   ],
   "stations": [
@@ -20,51 +16,76 @@
       "id": "ST01",
       "name": "Station 1",
       "game_type": "Quiz",
+      "description": "This is a quiz station where teams will answer questions to earn points.",
       "points": 100,
-      "youtube_url": null,
-      "clue_text": null,
+      "youtube_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "clue_text": "Giải mã mật thư để mở cửa trạm này",
       "latitude": 10.77689,
-      "longitude": 106.70081
+      "longitude": 106.70081,
+      "position": {
+        "x": 100,
+        "y": 200
+      }
     },
     {
       "id": "ST02",
       "name": "Station 2",
       "game_type": "Puzzle",
+      "description": "This is a puzzle station where teams will solve puzzles to earn points.",
       "points": 100,
-      "youtube_url": null,
-      "clue_text": null,
+      "youtube_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "clue_text": "Giải mã mật thư để mở cửa trạm này",
       "latitude": 10.77721,
-      "longitude": 106.70143
+      "longitude": 106.70143,
+      "position": {
+        "x": 200,
+        "y": 300
+      }
     },
     {
       "id": "ST03",
       "name": "Station 3",
       "game_type": "Obstacle",
+      "description": "This is an obstacle station where teams will complete physical challenges to earn points.",
       "points": 100,
-      "youtube_url": null,
-      "clue_text": null,
+      "youtube_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "clue_text": "Giải mã mật thư để mở cửa trạm này",
       "latitude": 10.77763,
-      "longitude": 106.70201
+      "longitude": 106.70201,
+      "position": {
+        "x": 300,
+        "y": 400
+      }
     },
     {
       "id": "ST04",
       "name": "Station 4",
       "game_type": "Riddle",
+      "description": "This is a riddle station where teams will solve riddles to earn points.",
       "points": 100,
-      "youtube_url": null,
-      "clue_text": null,
+      "youtube_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "clue_text": "Giải mã mật thư để mở cửa trạm này",
       "latitude": 10.77812,
-      "longitude": 106.70259
+      "longitude": 106.70259,
+      "position": {
+        "x": 400,
+        "y": 500
+      }
     },
     {
       "id": "ST05",
       "name": "Station 5",
       "game_type": "Sprint",
+      "description": "This is a sprint station where teams will race to complete a course and earn points.",
       "points": 100,
-      "youtube_url": null,
-      "clue_text": null,
+      "youtube_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "clue_text": "Giải mã mật thư để mở cửa trạm này",
       "latitude": 10.77854,
-      "longitude": 106.70314
+      "longitude": 106.70314,
+      "position": {
+        "x": 500,
+        "y": 600
+      }
     }
   ],
   "teams": [

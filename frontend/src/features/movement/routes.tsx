@@ -1,12 +1,13 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { ProtectedRoute } from './layout/ProtectedRoute'
-import { LoginPage } from './pages/LoginPage'
-import { StationDetailPage } from './pages/StationDetailPage'
-import { StationEditorPage } from './pages/StationEditorPage'
-import { StationListPage } from './pages/StationListPage'
-import { SystemConfigPage } from './pages/SystemConfigPage'
-import { TeamEditorPage } from './pages/TeamEditorPage'
-import { TeamListPage } from './pages/TeamListPage'
+import {Navigate, Route, Routes} from "react-router-dom";
+import {ProtectedRoute} from "./layout/ProtectedRoute";
+import {LoginPage} from "./pages/LoginPage";
+import {StationDetailPage} from "./pages/StationDetailPage";
+import {StationEditorPage} from "./pages/StationEditorPage";
+import {StationListPage} from "./pages/StationListPage";
+import {StationsMapPage} from "./pages/StationsMapPage";
+import {SystemConfigPage} from "./pages/SystemConfigPage";
+import {TeamEditorPage} from "./pages/TeamEditorPage";
+import {TeamListPage} from "./pages/TeamListPage";
 
 export function MovementRoutes() {
   return (
@@ -21,6 +22,14 @@ export function MovementRoutes() {
         }
       />
       <Route
+        path="/stations/map"
+        element={
+          <ProtectedRoute allow={["user"]}>
+            <StationsMapPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/stations/:stationId"
         element={
           <ProtectedRoute>
@@ -31,7 +40,7 @@ export function MovementRoutes() {
       <Route
         path="/teams"
         element={
-          <ProtectedRoute allow={['admin', 'system-admin']}>
+          <ProtectedRoute allow={["admin"]}>
             <TeamListPage />
           </ProtectedRoute>
         }
@@ -39,7 +48,7 @@ export function MovementRoutes() {
       <Route
         path="/system-config"
         element={
-          <ProtectedRoute allow={['system-admin']}>
+          <ProtectedRoute allow={["admin"]}>
             <SystemConfigPage />
           </ProtectedRoute>
         }
@@ -47,7 +56,7 @@ export function MovementRoutes() {
       <Route
         path="/system-config/stations/new"
         element={
-          <ProtectedRoute allow={['system-admin']}>
+          <ProtectedRoute allow={["admin"]}>
             <StationEditorPage />
           </ProtectedRoute>
         }
@@ -55,7 +64,7 @@ export function MovementRoutes() {
       <Route
         path="/system-config/stations/:stationId"
         element={
-          <ProtectedRoute allow={['system-admin']}>
+          <ProtectedRoute allow={["admin"]}>
             <StationEditorPage />
           </ProtectedRoute>
         }
@@ -63,7 +72,7 @@ export function MovementRoutes() {
       <Route
         path="/system-config/teams/new"
         element={
-          <ProtectedRoute allow={['system-admin']}>
+          <ProtectedRoute allow={["admin"]}>
             <TeamEditorPage />
           </ProtectedRoute>
         }
@@ -71,12 +80,12 @@ export function MovementRoutes() {
       <Route
         path="/system-config/teams/:teamId"
         element={
-          <ProtectedRoute allow={['system-admin']}>
+          <ProtectedRoute allow={["admin"]}>
             <TeamEditorPage />
           </ProtectedRoute>
         }
       />
       <Route path="*" element={<Navigate to="/stations" replace />} />
     </Routes>
-  )
+  );
 }
